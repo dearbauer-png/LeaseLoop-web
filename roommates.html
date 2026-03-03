@@ -281,7 +281,7 @@
     setupForm.addEventListener('submit', e => {
       e.preventDefault();
       const moveRaw = document.getElementById('s-movein').value;
-      const moveIn  = moveRaw ? new Date(moveRaw + '-01').toLocaleDateString('en-US',{month:'long',year:'numeric'}) : 'Flexible';
+      const moveIn  = moveRaw ? new Date(moveRaw + '-02').toLocaleDateString('en-US',{month:'long',year:'numeric'}) : 'Flexible';
       const interests = document.getElementById('s-interests').value.split(',').map(s => s.trim()).filter(Boolean);
       const profile = {
         id: 'my_' + user.id,
@@ -414,7 +414,7 @@
       currentIdx++;
       renderCard();
       renderMatches();
-      // Always show "match" on first like for demo delight
+      // Show match celebration for the first few likes (demo delight)
       if (getRMLikes().length <= 3) {
         showMatchModal(p);
       } else {

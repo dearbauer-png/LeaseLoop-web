@@ -48,7 +48,7 @@ function register(data) {
     id:           'u_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
     name:         data.name.trim(),
     email:        data.email.trim().toLowerCase(),
-    password:     data.password,           // plaintext for demo
+    password:     data.password,           // ⚠️ DEMO ONLY — plaintext. In production use bcrypt/argon2 server-side.
     type:         data.type,               // 'student' | 'realtor'
     campus:       data.campus || 'UT Austin',
     phone:        data.phone  || '',
@@ -189,7 +189,8 @@ function passRoommate(profileId) {
   if (!passes.includes(profileId)) { passes.push(profileId); localStorage.setItem(`${PASSES_KEY}_${u.id}`, JSON.stringify(passes)); }
 }
 function getMatches() {
-  // Return profiles the user has liked (simulate mutual match with seeded data)
+  // Return profiles the user has liked (demo: treats every like as a mutual match;
+  // in production, both parties would need to like each other server-side)
   const liked = getRMLikes();
   return roommateProfiles.filter(p => liked.includes(p.id));
 }
