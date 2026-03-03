@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Browse Listings — LeaseLoop</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<nav class="navbar" role="navigation" aria-label="Main navigation">
+  <div class="navbar-inner">
+    <a href="index.html" class="navbar-brand">🔄 LeaseLoop</a>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="navbar-links" id="navbar-links" role="list">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="listings.html" class="active-nav">Browse Listings</a></li>
+      <li><a href="roommates.html">Find Roommates</a></li>
+      <li><a href="dashboard.html">Dashboard</a></li>
+    </ul>
+    <div class="navbar-right" id="navbar-right"></div>
+    <button class="campus-chip" id="campus-chip" aria-label="Switch campus">🎓 Campus ▼</button>
+  </div>
+</nav>
+
+<div class="page-band">
+  <div class="container">
+    <div>
+      <h1>Browse Student Housing</h1>
+      <p>Apartments, houses, studios &amp; subleases near your campus</p>
+    </div>
+    <a href="#" class="btn btn-green" id="btn-post-listing">+ List a Property</a>
+  </div>
+</div>
+
+<div class="page-content">
+  <div class="container">
+    <!-- Filter Bar -->
+    <div class="filters-bar" role="search" aria-label="Filter listings">
+      <div class="filters-title">🔍 Filter Listings</div>
+      <div class="filters-row">
+        <div class="filter-group">
+          <label for="f-q">Keyword</label>
+          <input type="text" id="f-q" placeholder="Search listings…">
+        </div>
+        <div class="filter-group">
+          <label for="f-campus">Campus</label>
+          <select id="f-campus">
+            <option value="">All Campuses</option>
+            <option>UT Austin</option><option>Baylor</option><option>Texas A&amp;M</option>
+            <option>TCU</option><option>SMU</option><option>UNT</option>
+            <option>Texas Tech</option><option>University of Houston</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="f-type">Type</label>
+          <select id="f-type">
+            <option value="">All Types</option>
+            <option>Apartment</option><option>House</option><option>Studio</option>
+            <option>Room</option><option>Condo</option><option>Duplex</option>
+            <option>Townhome</option><option>Sublease</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="f-beds">Beds</label>
+          <select id="f-beds">
+            <option value="">Any</option>
+            <option value="0">Studio</option><option value="1">1+</option>
+            <option value="2">2+</option><option value="3">3+</option><option value="4">4+</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="f-minprice">Min $</label>
+          <input type="number" id="f-minprice" placeholder="0" min="0" step="50">
+        </div>
+        <div class="filter-group">
+          <label for="f-maxprice">Max $</label>
+          <input type="number" id="f-maxprice" placeholder="Any" min="0" step="50">
+        </div>
+        <div class="filter-group">
+          <label for="f-sort">Sort</label>
+          <select id="f-sort">
+            <option value="price-asc">Price ↑</option>
+            <option value="price-desc">Price ↓</option>
+            <option value="rating">Top Rated</option>
+            <option value="newest">Newest</option>
+          </select>
+        </div>
+        <div class="filter-actions">
+          <button id="btn-apply" class="btn btn-primary">Apply</button>
+          <button id="btn-clear" class="btn btn-ghost">Clear</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="results-bar">
+      <p class="results-count" id="results-count" role="status" aria-live="polite">
+        Showing <span id="count-num">0</span> listings
+      </p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;" id="active-filters"></div>
+    </div>
+
+    <div class="listings-grid" id="listings-grid" aria-label="Listings"></div>
+    <div class="empty-state hidden" id="empty-state">
+      <div class="empty-state-icon">🏠</div>
+      <h3>No listings match your filters</h3>
+      <p>Try broadening your search or clearing some filters.</p>
+      <button class="btn btn-primary" id="btn-reset-empty">Clear Filters</button>
+    </div>
+  </div>
+</div>
+
+<!-- Post Listing Modal -->
+<div class="modal-overlay hidden" id="post-modal" role="dialog" aria-modal="true" aria-label="Post a listing">
+  <div class="modal-box modal-box-wide" style="max-width:680px;">
+    <div class="modal-header">
+      <h2>📋 List a Property</h2>
+      <button class="modal-close" id="post-close" aria-label="Close">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div id="post-auth-warn" class="alert alert-warning hidden">
+        <span class="alert-icon">⚠️</span>
+        <span>You must be logged in as a <strong>Realtor/Landlord</strong> to post listings. <a href="auth.html?tab=register&type=realtor">Sign up as a Realtor →</a></span>
+      </div>
+      <form id="post-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="p-title">Listing Title *</label>
+            <input type="text" id="p-title" placeholder="e.g. Modern 2BR Near UT Austin" required>
+          </div>
+          <div class="form-group">
+            <label for="p-type">Property Type *</label>
+            <select id="p-type" required>
+              <option value="">Select…</option>
+              <option>Apartment</option><option>House</option><option>Studio</option>
+              <option>Room</option><option>Condo</option><option>Duplex</option>
+              <option>Townhome</option><option>Sublease</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="p-price">Monthly Rent ($) *</label>
+            <input type="number" id="p-price" placeholder="850" min="0" required>
+          </div>
+          <div class="form-group">
+            <label for="p-campus">Campus *</label>
+            <select id="p-campus" required>
+              <option value="">Select campus…</option>
+              <option>UT Austin</option><option>Baylor</option><option>Texas A&amp;M</option>
+              <option>TCU</option><option>SMU</option><option>UNT</option>
+              <option>Texas Tech</option><option>University of Houston</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="p-beds">Bedrooms *</label>
+            <select id="p-beds" required>
+              <option value="0">Studio</option><option value="1">1</option>
+              <option value="2">2</option><option value="3">3</option><option value="4">4+</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="p-baths">Bathrooms *</label>
+            <select id="p-baths" required>
+              <option value="1">1</option><option value="2">2</option><option value="3">3</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="p-sqft">Sqft</label>
+            <input type="number" id="p-sqft" placeholder="850" min="0">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="p-address">Street Address / Location</label>
+          <input type="text" id="p-address" placeholder="e.g. 0.3 miles from UT Austin">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="p-available">Available Date</label>
+            <input type="month" id="p-available">
+          </div>
+          <div class="form-group">
+            <label for="p-lease">Lease Length</label>
+            <select id="p-lease">
+              <option>12 months</option><option>9 months</option><option>6 months</option>
+              <option>Month-to-month</option><option>Short-term / Sublease</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="p-pets">Pet Policy</label>
+            <select id="p-pets">
+              <option>No pets</option><option>Cats OK</option><option>Dogs OK</option>
+              <option>Pets OK (deposit required)</option><option>Small pets OK</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="p-parking">Parking</label>
+            <select id="p-parking">
+              <option>Street parking</option><option>Included</option>
+              <option>Covered included</option><option>Attached garage</option>
+              <option>Paid parking available</option>
+            </select>
+          </div>
+        </div>
+        <p class="form-section-title">Amenities</p>
+        <div class="checkbox-group" id="amenities-check">
+          <label class="checkbox-item"><input type="checkbox" value="In-unit W/D"> In-unit W/D</label>
+          <label class="checkbox-item"><input type="checkbox" value="Dishwasher"> Dishwasher</label>
+          <label class="checkbox-item"><input type="checkbox" value="Central A/C"> Central A/C</label>
+          <label class="checkbox-item"><input type="checkbox" value="Pool"> Pool</label>
+          <label class="checkbox-item"><input type="checkbox" value="Gym"> Gym</label>
+          <label class="checkbox-item"><input type="checkbox" value="Furnished"> Furnished</label>
+          <label class="checkbox-item"><input type="checkbox" value="Utilities included"> Utilities Incl.</label>
+          <label class="checkbox-item"><input type="checkbox" value="Hardwood floors"> Hardwood floors</label>
+          <label class="checkbox-item"><input type="checkbox" value="Balcony"> Balcony</label>
+          <label class="checkbox-item"><input type="checkbox" value="Backyard"> Backyard</label>
+          <label class="checkbox-item"><input type="checkbox" value="Pet friendly"> Pet Friendly</label>
+          <label class="checkbox-item"><input type="checkbox" value="WiFi included"> WiFi Incl.</label>
+        </div>
+        <div class="form-group" style="margin-top:16px;">
+          <label for="p-desc">Description *</label>
+          <textarea id="p-desc" rows="4" placeholder="Describe your property — highlights, nearby attractions, what makes it great for students…" required></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="p-contact-email">Contact Email *</label>
+            <input type="email" id="p-contact-email" placeholder="landlord@email.com" required>
+          </div>
+          <div class="form-group">
+            <label for="p-contact-phone">Contact Phone</label>
+            <input type="tel" id="p-contact-phone" placeholder="(555) 000-0000">
+          </div>
+        </div>
+        <button type="submit" class="btn btn-green btn-block btn-lg" style="margin-top:8px;">🚀 Submit Listing</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand">🔄 LeaseLoop</div>
+        <p class="footer-tagline">Student housing, simplified.</p>
+      </div>
+      <div class="footer-col"><h4>Browse</h4><ul>
+        <li><a href="listings.html">All Listings</a></li>
+        <li><a href="listings.html?type=Apartment">Apartments</a></li>
+        <li><a href="listings.html?type=House">Houses</a></li>
+        <li><a href="listings.html?type=Sublease">Subleases</a></li>
+      </ul></div>
+      <div class="footer-col"><h4>Tools</h4><ul>
+        <li><a href="roommates.html">Roommate Finder</a></li>
+        <li><a href="dashboard.html">Dashboard</a></li>
+      </ul></div>
+      <div class="footer-col"><h4>Company</h4><ul>
+        <li><a href="#">About</a></li><li><a href="#">Contact</a></li>
+      </ul></div>
+    </div>
+    <div class="footer-bottom"><span>© 2025 LeaseLoop</span><span>Made for college students 🎓</span></div>
+  </div>
+</footer>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="data.js"></script>
+<script src="auth.js"></script>
+<script src="app.js"></script>
+<script>
+  // Pre-populate from URL
+  const params = new URLSearchParams(window.location.search);
+  const fq   = document.getElementById('f-q');
+  const fc   = document.getElementById('f-campus');
+  const ft   = document.getElementById('f-type');
+  const fb   = document.getElementById('f-beds');
+  const fmax = document.getElementById('f-maxprice');
+  const fmin = document.getElementById('f-minprice');
+  if (params.get('q'))      fq.value  = params.get('q');
+  if (params.get('campus')) fc.value  = params.get('campus');
+  if (params.get('type'))   ft.value  = params.get('type');
+  if (params.get('beds'))   fb.value  = params.get('beds');
+  if (params.get('max'))    fmax.value= params.get('max');
+  // Default campus chip to user's campus if no param
+  if (!params.get('campus')) {
+    const uc = getCurrentCampus();
+    // don't auto-filter on campus from chip on listings page — user can see all
+  }
+
+  function applyFilters() {
+    const q      = fq.value.trim().toLowerCase();
+    const campus = fc.value;
+    const type   = ft.value;
+    const beds   = fb.value;
+    const minP   = parseFloat(fmin.value) || 0;
+    const maxP   = parseFloat(fmax.value) || Infinity;
+    const sortBy = document.getElementById('f-sort').value;
+
+    let res = getAllListings().filter(l => {
+      if (campus && l.campus !== campus) return false;
+      if (type   && l.type   !== type)   return false;
+      if (beds !== '') {
+        const b = parseInt(beds);
+        if (l.bedrooms < b) return false;
+      }
+      if (l.price < minP || l.price > maxP) return false;
+      if (q && !(
+        l.title.toLowerCase().includes(q) ||
+        l.description.toLowerCase().includes(q) ||
+        l.city.toLowerCase().includes(q) ||
+        l.campus.toLowerCase().includes(q) ||
+        l.type.toLowerCase().includes(q) ||
+        (l.amenities || []).some(a => a.toLowerCase().includes(q))
+      )) return false;
+      return true;
+    });
+
+    if (sortBy === 'price-asc')  res.sort((a,b) => a.price - b.price);
+    if (sortBy === 'price-desc') res.sort((a,b) => b.price - a.price);
+    if (sortBy === 'rating')     res.sort((a,b) => b.rating - a.rating);
+    if (sortBy === 'newest')     res.sort((a,b) => b.id - a.id);
+
+    const grid  = document.getElementById('listings-grid');
+    const empty = document.getElementById('empty-state');
+    document.getElementById('count-num').textContent = res.length;
+    grid.innerHTML = '';
+    if (res.length === 0) {
+      grid.classList.add('hidden'); empty.classList.remove('hidden');
+    } else {
+      grid.classList.remove('hidden'); empty.classList.add('hidden');
+      res.forEach(l => grid.appendChild(buildCard(l, 'details.html')));
+    }
+  }
+
+  document.getElementById('btn-apply').addEventListener('click', applyFilters);
+  document.getElementById('btn-clear').addEventListener('click', () => {
+    [fq, fc, ft, fb, fmin, fmax].forEach(el => el.value = '');
+    document.getElementById('f-sort').value = 'price-asc';
+    applyFilters();
+  });
+  document.getElementById('btn-reset-empty').addEventListener('click', () => document.getElementById('btn-clear').click());
+  fq.addEventListener('keydown', e => { if (e.key === 'Enter') applyFilters(); });
+
+  // Post listing modal
+  const postModal = document.getElementById('post-modal');
+  const openPost  = () => {
+    const user = getCurrentUser();
+    if (!user) { window.location.href = 'auth.html?tab=register&type=realtor&next=' + encodeURIComponent(window.location.href); return; }
+    if (user.type !== 'realtor') {
+      document.getElementById('post-auth-warn').classList.remove('hidden');
+      document.getElementById('post-form').style.opacity = '.4';
+      document.getElementById('post-form').style.pointerEvents = 'none';
+    } else {
+      document.getElementById('p-contact-email').value = user.email;
+      document.getElementById('p-contact-phone').value = user.phone || '';
+      document.getElementById('p-campus').value = user.campus || '';
+    }
+    postModal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  };
+  document.getElementById('btn-post-listing').addEventListener('click', e => { e.preventDefault(); openPost(); });
+  document.getElementById('post-close').addEventListener('click', () => { postModal.classList.add('hidden'); document.body.style.overflow = ''; });
+  postModal.addEventListener('click', e => { if (e.target === postModal) { postModal.classList.add('hidden'); document.body.style.overflow = ''; } });
+
+  document.getElementById('post-form').addEventListener('submit', e => {
+    e.preventDefault();
+    const user = getCurrentUser();
+    const amenities = [...document.querySelectorAll('#amenities-check input:checked')].map(i => i.value);
+    const availRaw = document.getElementById('p-available').value;
+    const avail    = availRaw ? new Date(availRaw + '-02').toLocaleDateString('en-US', {month:'long',year:'numeric'}) : 'Flexible';
+    const newListing = {
+      id: Date.now(),
+      title:        document.getElementById('p-title').value.trim(),
+      price:        parseFloat(document.getElementById('p-price').value),
+      priceUnit:    'month',
+      location:     document.getElementById('p-address').value || ('Near ' + document.getElementById('p-campus').value),
+      city:         document.getElementById('p-campus').value + ', TX',
+      campus:       document.getElementById('p-campus').value,
+      bedrooms:     parseInt(document.getElementById('p-beds').value),
+      bathrooms:    parseInt(document.getElementById('p-baths').value),
+      sqft:         parseInt(document.getElementById('p-sqft').value) || 0,
+      type:         document.getElementById('p-type').value,
+      available:    avail,
+      leaseLength:  document.getElementById('p-lease').value,
+      petPolicy:    document.getElementById('p-pets').value,
+      parking:      document.getElementById('p-parking').value,
+      utilities:    [],
+      description:  document.getElementById('p-desc').value.trim(),
+      amenities:    amenities,
+      landlord:     user ? user.name : 'Landlord',
+      landlordEmail:document.getElementById('p-contact-email').value,
+      landlordPhone:document.getElementById('p-contact-phone').value,
+      landlordType: user && user.type === 'realtor' ? 'Realtor' : 'Private',
+      agency:       user ? user.agency : '',
+      featured:     false, saved: false, icon: '🏠',
+      rating: 5.0, reviews: 0, views: 0, inquiries: 0,
+      status: 'available', postedBy: user ? user.id : null,
+    };
+    addUserListing(newListing);
+    postModal.classList.add('hidden');
+    document.body.style.overflow = '';
+    showToast('✅ Listing posted successfully!');
+    applyFilters();
+    e.target.reset();
+  });
+
+  // Open post modal if action=post in URL
+  if (params.get('action') === 'post') setTimeout(openPost, 400);
+
+  window.onCampusChange = () => applyFilters();
+  applyFilters();
+</script>
+</body>
+</html>

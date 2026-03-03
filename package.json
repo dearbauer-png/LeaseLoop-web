@@ -1,0 +1,11 @@
+{
+  "name": "leaseloop-web",
+  "version": "1.0.0",
+  "description": "Student housing marketplace — find apartments, subleases, and roommates near your campus",
+  "scripts": {
+    "start": "python3 -m http.server 3000",
+    "start:node": "npx serve ."
+  },
+  "keywords": ["student housing", "college", "roommates", "sublease", "real estate"],
+  "license": "MIT"
+}

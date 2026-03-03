@@ -1,28 +1,244 @@
-cat > index.html << 'EOF'
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LeaseLoop — Student Housing</title>
+  <meta name="description" content="LeaseLoop — Student housing made simple. Find apartments, houses, and roommates near your campus.">
+  <title>LeaseLoop — Student Housing Marketplace</title>
   <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-  <div id="app"></div>
-  <script src="utils/theme.js"></script>
-  <script src="utils/data.js"></script>
-  <script src="utils/helpers.js"></script>
-  <script src="components/navbar.js"></script>
-  <script src="components/filters.js"></script>
-  <script src="components/listing-card.js"></script>
-  <script src="screens/home.js"></script>
-  <script src="screens/detail.js"></script>
-  <script src="screens/post.js"></script>
-  <script src="screens/saved.js"></script>
-  <script src="screens/messages.js"></script>
-  <script src="screens/profile.js"></script>
-  <script src="app.js"></script>
+
+<nav class="navbar" role="navigation" aria-label="Main navigation">
+  <div class="navbar-inner">
+    <a href="index.html" class="navbar-brand">🔄 LeaseLoop</a>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="navbar-links" id="navbar-links" role="list">
+      <li><a href="index.html" class="active-nav">Home</a></li>
+      <li><a href="listings.html">Browse Listings</a></li>
+      <li><a href="roommates.html">Find Roommates</a></li>
+      <li><a href="dashboard.html">Dashboard</a></li>
+    </ul>
+    <div class="navbar-right" id="navbar-right"><!-- auth injected by JS --></div>
+    <button class="campus-chip" id="campus-chip" aria-label="Switch campus">🎓 UT Austin ▼</button>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero" aria-labelledby="hero-heading">
+  <div class="hero-inner">
+    <span class="hero-badge">🎓 Built for College Students</span>
+    <h1 id="hero-heading">Find Your Perfect <br><span id="hero-campus-name">Student Home</span></h1>
+    <p class="hero-sub">Browse apartments, houses, studios &amp; subleases near top universities. No broker fees. No hassle.</p>
+    <form class="search-box" id="hero-search-form" role="search" aria-label="Search listings">
+      <input type="text" id="hero-q" placeholder="Search by keyword, address, or amenity…" aria-label="Search">
+      <select id="hero-campus" aria-label="Select campus">
+        <option value="">All Campuses</option>
+        <option value="UT Austin">UT Austin</option>
+        <option value="Baylor">Baylor</option>
+        <option value="Texas A&amp;M">Texas A&amp;M</option>
+        <option value="TCU">TCU</option>
+        <option value="SMU">SMU</option>
+        <option value="UNT">UNT</option>
+        <option value="Texas Tech">Texas Tech</option>
+        <option value="University of Houston">U of Houston</option>
+      </select>
+      <select id="hero-type" aria-label="Property type">
+        <option value="">Any Type</option>
+        <option>Apartment</option><option>House</option><option>Studio</option>
+        <option>Room</option><option>Sublease</option><option>Condo</option>
+      </select>
+      <button type="submit" class="btn-search">🔍 Search</button>
+    </form>
+    <div class="hero-stats" aria-label="Platform stats">
+      <div class="hero-stat"><div class="hero-stat-num" id="stat-listings">200+</div><div class="hero-stat-label">Active Listings</div></div>
+      <div class="hero-stat"><div class="hero-stat-num">8</div><div class="hero-stat-label">Campuses</div></div>
+      <div class="hero-stat"><div class="hero-stat-num">$550</div><div class="hero-stat-label">Avg. Starting Price</div></div>
+      <div class="hero-stat"><div class="hero-stat-num">4.6★</div><div class="hero-stat-label">Avg. Rating</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- Featured Listings -->
+<section class="section" aria-labelledby="featured-heading">
+  <div class="container">
+    <div class="section-header">
+      <h2 id="featured-heading">Featured Listings</h2>
+      <p>Hand-picked properties near top Texas campuses</p>
+    </div>
+    <div class="listings-grid" id="featured-grid" aria-label="Featured listings"></div>
+    <div style="text-align:center;margin-top:36px;">
+      <a href="listings.html" class="btn btn-primary btn-lg">View All Listings →</a>
+    </div>
+  </div>
+</section>
+
+<!-- How It Works -->
+<section class="how-it-works section-alt" aria-labelledby="how-heading">
+  <div class="section-header">
+    <h2 id="how-heading">How LeaseLoop Works</h2>
+    <p>Finding student housing shouldn't be stressful</p>
+  </div>
+  <div class="steps-grid container" role="list">
+    <div class="step-card" role="listitem">
+      <div class="step-icon-wrap">🎓</div>
+      <p class="step-num">Step 1</p>
+      <h3>Set Your Campus</h3>
+      <p>Choose your university and we'll show listings tailored to your area.</p>
+    </div>
+    <div class="step-card" role="listitem">
+      <div class="step-icon-wrap">🔍</div>
+      <p class="step-num">Step 2</p>
+      <h3>Search &amp; Filter</h3>
+      <p>Filter by price, bedrooms, type, and distance to narrow down your options.</p>
+    </div>
+    <div class="step-card" role="listitem">
+      <div class="step-icon-wrap">❤️</div>
+      <p class="step-num">Step 3</p>
+      <h3>Save Favorites</h3>
+      <p>Save listings and roommate matches to compare later in your dashboard.</p>
+    </div>
+    <div class="step-card" role="listitem">
+      <div class="step-icon-wrap">💬</div>
+      <p class="step-num">Step 4</p>
+      <h3>Contact &amp; Move In</h3>
+      <p>Message landlords, schedule tours, and sign your lease — all in one place.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Browse by Campus -->
+<section class="section" aria-labelledby="campus-section-heading">
+  <div class="container">
+    <div class="section-header">
+      <h2 id="campus-section-heading">Browse by Campus</h2>
+      <p>Select your university to see available housing</p>
+    </div>
+    <div class="campus-cards" id="campus-cards-grid" role="list"></div>
+  </div>
+</section>
+
+<!-- Roommate finder teaser -->
+<section class="section section-alt" aria-labelledby="rm-teaser-heading">
+  <div class="container" style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;">
+    <div>
+      <h2 id="rm-teaser-heading" style="font-size:30px;font-weight:800;margin-bottom:12px;">Find the Perfect Roommate 💑</h2>
+      <p style="font-size:17px;color:var(--gray-500);margin-bottom:24px;">Our roommate finder works like a dating app — swipe through profiles, match with compatible students, and find your next roommate before the semester starts.</p>
+      <ul style="list-style:none;display:flex;flex-direction:column;gap:12px;margin-bottom:28px;">
+        <li style="display:flex;align-items:center;gap:10px;font-size:15px;color:var(--gray-700);"><span style="font-size:20px;">✅</span> Filter by campus, budget, sleep schedule</li>
+        <li style="display:flex;align-items:center;gap:10px;font-size:15px;color:var(--gray-700);"><span style="font-size:20px;">✅</span> Match when both students like each other</li>
+        <li style="display:flex;align-items:center;gap:10px;font-size:15px;color:var(--gray-700);"><span style="font-size:20px;">✅</span> Message matches to coordinate move-in</li>
+      </ul>
+      <a href="roommates.html" class="btn btn-primary btn-lg">Try Roommate Finder →</a>
+    </div>
+    <div style="text-align:center;font-size:120px;line-height:1;">🏠❤️🤝</div>
+  </div>
+</section>
+
+<!-- Realtor CTA -->
+<section class="cta-banner" aria-labelledby="cta-heading">
+  <h2 id="cta-heading">Are You a Realtor or Landlord?</h2>
+  <p>List your property on LeaseLoop and connect with thousands of college students looking for housing.</p>
+  <div class="cta-btns">
+    <a href="auth.html?tab=register&type=realtor" class="btn btn-white btn-lg">List My Property</a>
+    <a href="listings.html" class="btn btn-outline-white btn-lg">Browse Listings</a>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer" aria-label="Footer">
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand">🔄 LeaseLoop</div>
+        <p class="footer-tagline">Student housing, simplified. Find your next home near campus without the hassle.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Browse</h4>
+        <ul>
+          <li><a href="listings.html">All Listings</a></li>
+          <li><a href="listings.html?type=Apartment">Apartments</a></li>
+          <li><a href="listings.html?type=House">Houses</a></li>
+          <li><a href="listings.html?type=Sublease">Subleases</a></li>
+          <li><a href="listings.html?type=Studio">Studios</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Tools</h4>
+        <ul>
+          <li><a href="roommates.html">Roommate Finder</a></li>
+          <li><a href="dashboard.html">My Dashboard</a></li>
+          <li><a href="auth.html?tab=register&type=realtor">List a Property</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">Contact</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 LeaseLoop. All rights reserved.</span>
+      <span>Made for college students 🎓</span>
+    </div>
+  </div>
+</footer>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="data.js"></script>
+<script src="auth.js"></script>
+<script src="app.js"></script>
+<script>
+  // Campus hero display
+  const campus = getCurrentCampus();
+  document.getElementById('hero-campus-name').textContent = campus + ' Housing';
+  document.getElementById('hero-campus').value = campus;
+
+  // Hero search
+  document.getElementById('hero-search-form').addEventListener('submit', e => {
+    e.preventDefault();
+    const q = document.getElementById('hero-q').value.trim();
+    const c = document.getElementById('hero-campus').value;
+    const t = document.getElementById('hero-type').value;
+    const p = new URLSearchParams();
+    if (q) p.set('q', q);
+    if (c) p.set('campus', c);
+    if (t) p.set('type', t);
+    window.location.href = 'listings.html?' + p.toString();
+  });
+
+  // Featured listings
+  const allL = getAllListings();
+  const featured = allL.filter(l => l.featured).slice(0, 6);
+  const grid = document.getElementById('featured-grid');
+  featured.forEach(l => grid.appendChild(buildCard(l, 'details.html')));
+  document.getElementById('stat-listings').textContent = allL.length + '+';
+
+  // Campus cards
+  const counts = {};
+  allL.forEach(l => { counts[l.campus] = (counts[l.campus] || 0) + 1; });
+  const campusCardsGrid = document.getElementById('campus-cards-grid');
+  CAMPUSES.forEach(c => {
+    const a = document.createElement('a');
+    a.href = `listings.html?campus=${encodeURIComponent(c.name)}`;
+    a.className = 'campus-card' + (c.name === campus ? ' current-campus' : '');
+    a.setAttribute('role', 'listitem');
+    a.innerHTML = `<div class="campus-card-emoji">${c.emoji}</div>
+      <div class="campus-card-name">${c.name}</div>
+      <div class="campus-card-count">${counts[c.name] || 0} listing${(counts[c.name] || 0) !== 1 ? 's' : ''}</div>`;
+    campusCardsGrid.appendChild(a);
+  });
+
+  // Re-render on campus change
+  window.onCampusChange = function(newCampus) {
+    document.getElementById('hero-campus-name').textContent = newCampus + ' Housing';
+    document.getElementById('hero-campus').value = newCampus;
+  };
+</script>
 </body>
 </html>
-EOF
