@@ -19,10 +19,22 @@ function setCurrentCampus(c) {
   localStorage.setItem(CAMPUS_KEY, c);
 }
 
+/* ── Seed demo accounts (pre-loaded on first visit) ──────── */
+const DEMO_USERS = [
+  { id: 'demo_student', name: 'Alex Demo', email: 'student@demo.com', password: 'demo123', type: 'student', campus: 'UT Austin', bio: 'Junior at UT Austin. Looking for a 2BR near campus for fall semester.', avatar: '🎓', joined: '2025-08-01' },
+  { id: 'demo_realtor', name: 'Sam Realty', email: 'realtor@demo.com', password: 'demo123', type: 'realtor', campus: 'UT Austin', agency: 'Austin Campus Rentals', bio: 'Specializing in student housing near UT Austin and surrounding campuses.', avatar: '🏢', joined: '2025-08-01' },
+];
+
 /* ── User store ───────────────────────────────────────────── */
 function getAllUsers() {
-  try { return JSON.parse(localStorage.getItem(AUTH_KEY) || '[]'); }
-  catch { return []; }
+  try {
+    const stored = JSON.parse(localStorage.getItem(AUTH_KEY) || '[]');
+    // Ensure demo accounts always exist (merge without overwriting real user data)
+    const emails = stored.map(u => u.email.toLowerCase());
+    const merged = [...stored];
+    DEMO_USERS.forEach(d => { if (!emails.includes(d.email)) merged.push(d); });
+    return merged;
+  } catch { return [...DEMO_USERS]; }
 }
 function saveAllUsers(users) {
   localStorage.setItem(AUTH_KEY, JSON.stringify(users));
