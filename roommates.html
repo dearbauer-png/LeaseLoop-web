@@ -31,6 +31,7 @@
       <li><a href="index.html">Home</a></li>
       <li><a href="listings.html">Browse Listings</a></li>
       <li><a href="roommates.html" class="active-nav">Find Roommates</a></li>
+      <li><a href="messages.html">💬 Messages</a></li>
       <li><a href="dashboard.html">Dashboard</a></li>
     </ul>
     <div class="navbar-right" id="navbar-right"></div>
@@ -457,11 +458,15 @@
       card.className = 'match-card';
       card.innerHTML = `
         <div class="match-avatar">${p.initials}</div>
-        <div>
+        <div style="flex:1;min-width:0;">
           <div class="match-name">${p.name}</div>
           <div class="match-info">${p.campus} · $${p.budget.min}–$${p.budget.max}/mo</div>
         </div>
-        <span class="match-badge">MATCH</span>`;
+        <button class="btn btn-primary btn-sm msg-match-btn" data-id="${p.id}" data-name="${p.name}" aria-label="Send message to ${p.name}" style="flex-shrink:0;">💬</button>`;
+      card.querySelector('.msg-match-btn').addEventListener('click', e => {
+        e.stopPropagation();
+        openMsgModal(p.id, p.name);
+      });
       card.addEventListener('click', () => showMatchModal(p));
       ml.appendChild(card);
     });
@@ -519,8 +524,7 @@
     modal.addEventListener('click', e => { if (e.target === modal) close(); });
     document.getElementById('match-msg').addEventListener('click', () => {
       close();
-      // Simulate sending message
-      showToast('💬 Message sent to ' + p.name + '!');
+      openMsgModal(p.id, p.name);
     });
   }
 </script>

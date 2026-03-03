@@ -17,6 +17,7 @@
       <li><a href="index.html">Home</a></li>
       <li><a href="listings.html">Browse Listings</a></li>
       <li><a href="roommates.html">Find Roommates</a></li>
+      <li><a href="messages.html">💬 Messages</a></li>
       <li><a href="dashboard.html" class="active-nav">Dashboard</a></li>
     </ul>
     <div class="navbar-right" id="navbar-right"></div>
@@ -63,6 +64,7 @@
           <li><a href="#" data-section="listings"  id="dash-nav-listings"><span class="nav-icon">🏠</span> <span id="dash-listings-label">My Listings</span></a></li>
           <li><a href="#" data-section="saved"     ><span class="nav-icon">❤️</span> Saved Listings</a></li>
           <li><a href="#" data-section="roommates" ><span class="nav-icon">🤝</span> Roommate Matches</a></li>
+          <li><a href="#" data-section="messages"  ><span class="nav-icon">💬</span> Messages</a></li>
           <li><a href="#" data-section="profile"   ><span class="nav-icon">👤</span> Profile Settings</a></li>
           <li><a href="#" id="dash-logout"          ><span class="nav-icon">🚪</span> Log Out</a></li>
         </ul>
@@ -142,6 +144,13 @@
         <h2 class="dash-section-title">Roommate Matches 💝</h2>
         <p class="dash-section-sub">People you matched with in the roommate finder</p>
         <div id="roommate-matches-content"></div>
+      </section>
+
+      <!-- Messages -->
+      <section class="dash-section" id="section-messages">
+        <h2 class="dash-section-title">💬 Messages</h2>
+        <p class="dash-section-sub">Your conversations with roommate matches</p>
+        <div id="dash-messages-content"></div>
       </section>
 
       <!-- Profile Settings -->
@@ -286,6 +295,7 @@
     if (name === 'saved') renderSavedListings();
     if (name === 'listings') renderMyListings();
     if (name === 'roommates') renderRoommateMatches();
+    if (name === 'messages') renderMessages();
   }
 
   function renderStats() {
@@ -433,11 +443,43 @@
             <p style="font-size:13px;color:var(--gray-500);margin-bottom:12px;">Budget: $${p.budget.min}–$${p.budget.max}/mo</p>
             <p style="font-size:13px;color:var(--gray-500);margin-bottom:14px;font-style:italic;">"${p.bio.substring(0,80)}…"</p>
             <div style="display:flex;gap:8px;">
-              <button class="btn btn-primary btn-sm" style="flex:1;" onclick="showToast('💬 Message sent to ${p.name}!')">💬 Message</button>
+              <button class="btn btn-primary btn-sm" style="flex:1;" onclick="openMsgModal('${p.id}', '${p.name}')">💬 Message</button>
               <a href="roommates.html" class="btn btn-ghost btn-sm" style="border:1px solid var(--gray-200);">Profile</a>
             </div>
           </div>
         </div>`).join('') + '</div>';
+  }
+
+  function renderMessages() {
+    const el = document.getElementById('dash-messages-content');
+    if (!el) return;
+    const convs = getMyConvs();
+    if (!convs.length) {
+      el.innerHTML = `<div class="empty-state"><div class="empty-state-icon">💬</div>
+        <h3>No Messages Yet</h3>
+        <p>Match with roommates and start chatting!</p>
+        <a href="roommates.html" class="btn btn-primary">Find Roommates</a></div>`;
+      return;
+    }
+    el.innerHTML = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;">' +
+      convs.map(c => {
+        const initials = c.otherName.split(' ').filter(w => w).map(w=>w[0]).join('').slice(0,2).toUpperCase();
+        const timeStr = new Date(c.last.ts).toLocaleDateString([], {month:'short',day:'numeric'});
+        return `<div style="background:white;border:1px solid var(--gray-200);border-radius:var(--radius-lg);padding:20px;box-shadow:var(--shadow-sm);">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+            <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--teal-600),var(--purple-600));color:white;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:800;flex-shrink:0;">${initials}</div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-weight:800;font-size:15px;">${c.otherName}</div>
+              <div style="font-size:12px;color:var(--gray-400);">${timeStr}</div>
+            </div>
+          </div>
+          <p style="font-size:13px;color:var(--gray-500);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:12px;">${c.last.text}</p>
+          <button class="btn btn-primary btn-sm btn-block open-conv-btn" data-id="${c.otherId}" data-name="${c.otherName}" style="width:100%;">Open Chat →</button>
+        </div>`;
+      }).join('') + '</div>';
+    el.querySelectorAll('.open-conv-btn').forEach(btn => {
+      btn.addEventListener('click', () => openMsgModal(btn.dataset.id, btn.dataset.name));
+    });
   }
 
   function populateProfileForm() {

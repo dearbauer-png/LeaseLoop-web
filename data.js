@@ -300,3 +300,10 @@ const roommateProfiles = [
     interests: ['Medicine', 'Piano', 'Study groups', 'Church', 'Cooking'], initials: 'AW',
   },
 ];
+
+const SPONSORS = [
+  { id: 'sp1', name: 'CampusConnect Broadband', tagline: 'Fast student WiFi plans from $29/mo — no contracts!', emoji: '📡', gradient: 'linear-gradient(135deg,#0891b2,#17a2a2)', url: '#', cta: 'Get Connected' },
+  { id: 'sp2', name: 'MoveEasy Student Movers', tagline: 'Local student moves starting at $99. TCU & campuses covered.', emoji: '🚛', gradient: 'linear-gradient(135deg,#7c3aed,#4f46e5)', url: '#', cta: 'Book a Move' },
+  { id: 'sp3', name: 'SafeNest Renter Insurance', tagline: 'Protect your stuff — student renter insurance from $8/mo.', emoji: '🛡️', gradient: 'linear-gradient(135deg,#15803d,#16a34a)', url: '#', cta: 'Get a Quote' },
+  { id: 'sp4', name: 'IKEA Student Discount', tagline: '10% off for students — furnish your new place for less!', emoji: '🛋️', gradient: 'linear-gradient(135deg,#f97316,#ea580c)', url: '#', cta: 'Shop Now' },
+];
