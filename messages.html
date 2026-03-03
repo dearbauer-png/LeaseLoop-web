@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Messages — LeaseLoops</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<nav class="navbar" role="navigation" aria-label="Main navigation">
+  <div class="navbar-inner">
+    <a href="index.html" class="navbar-brand">🐸♾️ LeaseLoops</a>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="navbar-links" id="navbar-links" role="list">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="listings.html">Browse Listings</a></li>
+      <li><a href="roommates.html">Find Roommates</a></li>
+      <li><a href="messages.html" class="active-nav">💬 Messages</a></li>
+      <li><a href="dashboard.html">Dashboard</a></li>
+    </ul>
+    <div class="navbar-right" id="navbar-right"></div>
+    <button class="campus-chip" id="campus-chip" aria-label="Switch campus">🐸 TCU ▼</button>
+  </div>
+</nav>
+
+<div class="page-band">
+  <div class="container">
+    <div>
+      <h1>💬 Messages</h1>
+      <p>Chat with your roommate matches</p>
+    </div>
+  </div>
+</div>
+
+<div class="page-content">
+  <div class="container">
+    <!-- Not logged in -->
+    <div id="msg-not-auth" class="hidden">
+      <div class="empty-state">
+        <div class="empty-state-icon">🔐</div>
+        <h3>Sign In to View Messages</h3>
+        <p>Create a free account to message your roommate matches.</p>
+        <div style="display:flex;gap:12px;justify-content:center;">
+          <a href="auth.html" class="btn btn-outline btn-lg">Log In</a>
+          <a href="auth.html?tab=register" class="btn btn-primary btn-lg">Sign Up Free</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Messaging UI -->
+    <div id="msg-ui" class="hidden">
+      <div class="msg-page-layout" id="msg-page-layout">
+        <!-- Left: conversation list -->
+        <div class="msg-conv-list" id="msg-conv-list">
+          <div class="msg-conv-list-header">Conversations</div>
+          <div id="conv-items"></div>
+        </div>
+        <!-- Right: chat panel -->
+        <div class="msg-chat-panel" id="msg-chat-panel">
+          <div class="msg-empty-chat" id="msg-empty-chat">
+            <div class="msg-empty-chat-icon">💬</div>
+            <h3 style="font-size:18px;font-weight:700;color:var(--gray-600);margin-bottom:8px;">Select a Conversation</h3>
+            <p style="color:var(--gray-400);font-size:14px;">Choose a conversation from the left, or match with roommates to start chatting.</p>
+            <a href="roommates.html" class="btn btn-primary" style="margin-top:16px;">Find Roommates →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div><div class="footer-brand">🐸♾️ LeaseLoops</div><p class="footer-tagline">Connecting Student Homes.</p></div>
+      <div class="footer-col"><h4>Browse</h4><ul>
+        <li><a href="listings.html">All Listings</a></li>
+        <li><a href="roommates.html">Find Roommates</a></li>
+      </ul></div>
+      <div class="footer-col"><h4>Company</h4><ul>
+        <li><a href="#">About</a></li><li><a href="#">Contact</a></li>
+      </ul></div>
+    </div>
+    <div class="footer-bottom"><span>© 2025 LeaseLoops</span><span>Made for college students 🎓</span></div>
+  </div>
+</footer>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="data.js"></script>
+<script src="auth.js"></script>
+<script src="app.js"></script>
+<script>
+  let activeOtherId = null;
+  let activeOtherName = null;
+
+  const user = getCurrentUser();
+  if (!user) {
+    document.getElementById('msg-not-auth').classList.remove('hidden');
+  } else {
+    document.getElementById('msg-ui').classList.remove('hidden');
+    initMessagesPage();
+  }
+
+  function initMessagesPage() {
+    renderConvList();
+    // Auto-open from URL params
+    const params = new URLSearchParams(window.location.search);
+    const withId = params.get('with');
+    const withName = params.get('name');
+    if (withId) {
+      const profile = roommateProfiles.find(p => String(p.id) === withId);
+      const name = withName ? decodeURIComponent(withName) : (profile ? profile.name : withId);
+      openConversation(withId, name);
+    }
+  }
+
+  function renderConvList() {
+    const el = document.getElementById('conv-items');
+    const convs = getMyConvs();
+    if (!convs.length) {
+      el.innerHTML = `<div style="padding:32px 20px;text-align:center;color:var(--gray-400);">
+        <div style="font-size:36px;margin-bottom:12px;">💔</div>
+        <p style="font-size:13px;line-height:1.6;">No conversations yet.<br>Match with roommates to start chatting!</p>
+        <a href="roommates.html" class="btn btn-primary btn-sm" style="margin-top:16px;">Find Roommates</a>
+      </div>`;
+      return;
+    }
+    el.innerHTML = convs.map(c => {
+      const initials = c.otherName.split(' ').filter(w => w).map(w => w[0]).join('').slice(0,2).toUpperCase();
+      const timeStr = formatMsgTime(c.last.ts);
+      const preview = (c.last.from === user.id ? 'You: ' : '') + c.last.text;
+      return `<div class="msg-conv-item ${c.otherId === activeOtherId ? 'active' : ''}" data-id="${c.otherId}" data-name="${c.otherName}">
+        <div class="msg-conv-avatar">${initials}</div>
+        <div style="flex:1;min-width:0;">
+          <div class="msg-conv-name">${c.otherName}</div>
+          <div class="msg-conv-preview">${preview}</div>
+        </div>
+        <div class="msg-conv-time">${timeStr}</div>
+      </div>`;
+    }).join('');
+    el.querySelectorAll('.msg-conv-item').forEach(item => {
+      item.addEventListener('click', () => {
+        openConversation(item.dataset.id, item.dataset.name);
+      });
+    });
+  }
+
+  function openConversation(otherId, otherName) {
+    activeOtherId = otherId;
+    activeOtherName = otherName;
+    // Mark active in list
+    document.querySelectorAll('.msg-conv-item').forEach(el => {
+      el.classList.toggle('active', el.dataset.id === otherId);
+    });
+    // Show chat panel
+    const panel = document.getElementById('msg-chat-panel');
+    const initials = otherName.split(' ').filter(w => w).map(w => w[0]).join('').slice(0,2).toUpperCase();
+    panel.innerHTML = `
+      <div class="msg-chat-header">
+        <div class="msg-conv-avatar">${initials}</div>
+        <div>
+          <div class="msg-chat-name">${otherName}</div>
+          <div class="msg-chat-sub">Roommate Match</div>
+        </div>
+      </div>
+      <div class="msg-thread" id="page-msg-thread">${renderThreadHtml(otherId)}</div>
+      <div class="msg-input-row">
+        <input type="text" id="page-msg-input" placeholder="Type a message…" maxlength="500">
+        <button class="btn btn-primary" id="page-msg-send" style="border-radius:var(--radius-full);padding:10px 20px;">Send</button>
+      </div>`;
+    const thread = document.getElementById('page-msg-thread');
+    thread.scrollTop = thread.scrollHeight;
+    const input = document.getElementById('page-msg-input');
+    const sendBtn = document.getElementById('page-msg-send');
+    const doSend = () => {
+      const txt = input.value.trim();
+      if (!txt) return;
+      sendMsg(otherId, otherName, txt);
+      input.value = '';
+      thread.innerHTML = renderThreadHtml(otherId);
+      thread.scrollTop = thread.scrollHeight;
+      renderConvList();
+    };
+    sendBtn.addEventListener('click', doSend);
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') doSend(); });
+    input.focus();
+    // Mobile: show chat panel
+    document.getElementById('msg-page-layout').classList.add('conv-selected');
+  }
+
+  function renderThreadHtml(otherId) {
+    const msgs = getConvMsgs(otherId);
+    if (!msgs.length) return '<div class="msg-empty">Say hello! 👋</div>';
+    return msgs.map(m => `
+      <div class="msg-bubble ${m.from === user.id ? 'msg-mine' : 'msg-theirs'}">
+        <div class="msg-text">${m.text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}</div>
+        <div class="msg-ts">${formatMsgTime(m.ts)}</div>
+      </div>`).join('');
+  }
+
+  function formatMsgTime(ts) {
+    const d = new Date(ts);
+    const now = new Date();
+    const diffDays = Math.floor((now - d) / 86400000);
+    if (diffDays === 0) return d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+    if (diffDays === 1) return 'Yesterday';
+    if (diffDays < 7) return d.toLocaleDateString([], {weekday:'short'});
+    return d.toLocaleDateString([], {month:'short', day:'numeric'});
+  }
+</script>
+</body>
+</html>

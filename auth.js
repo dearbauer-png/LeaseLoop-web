@@ -207,6 +207,42 @@ function getMatches() {
   return roommateProfiles.filter(p => liked.includes(p.id));
 }
 
+/* ── Messaging ────────────────────────────────────────────── */
+const MESSAGES_KEY = 'll_messages';
+function getMsgConvId(id1, id2) { return [String(id1), String(id2)].sort().join('__'); }
+function getAllMsgs() { try { return JSON.parse(localStorage.getItem(MESSAGES_KEY) || '{}'); } catch { return {}; } }
+function getConvMsgs(otherId) {
+  const u = getCurrentUser();
+  if (!u) return [];
+  return getAllMsgs()[getMsgConvId(u.id, otherId)] || [];
+}
+function sendMsg(otherId, otherName, text) {
+  const u = getCurrentUser();
+  if (!u || !text.trim()) return false;
+  const key = getMsgConvId(u.id, otherId);
+  const all = getAllMsgs();
+  if (!all[key]) all[key] = [];
+  all[key].push({ from: u.id, fromName: u.name, to: otherId, toName: otherName, text: text.trim(), ts: new Date().toISOString() });
+  localStorage.setItem(MESSAGES_KEY, JSON.stringify(all));
+  return true;
+}
+function getMyConvs() {
+  const u = getCurrentUser();
+  if (!u) return [];
+  const all = getAllMsgs();
+  const result = [];
+  Object.entries(all).forEach(([key, msgs]) => {
+    if (!msgs.length) return;
+    const ids = key.split('__');
+    if (!ids.includes(String(u.id))) return;
+    const otherId = ids.find(id => id !== String(u.id));
+    const last = msgs[msgs.length - 1];
+    const otherName = last.from === u.id ? last.toName : last.fromName;
+    result.push({ key, otherId, otherName, last, msgs });
+  });
+  return result.sort((a, b) => new Date(b.last.ts) - new Date(a.last.ts));
+}
+
 /* ── Shared helpers ───────────────────────────────────────── */
 function bedroomLabel(n) {
   return n === 0 ? 'Studio' : n === 1 ? '1 Bed' : `${n} Beds`;
@@ -330,8 +366,10 @@ function buildCard(listing, targetPage) {
   card.setAttribute('data-tcu', listing.campus === 'TCU' ? 'true' : 'false');
   card.innerHTML = `
     <a class="card-img-link" href="${page}?id=${listing.id}" aria-label="View ${listing.title}">
-      <div class="card-img" role="img" aria-label="${listing.type}">
-        <span class="card-icon">${listing.icon || '🏠'}</span>
+      <div class="card-img ${listing.photos && listing.photos[0] ? 'card-img-photo' : ''}" ${listing.photos && listing.photos[0] ? '' : 'role="img" aria-label="' + listing.type + '"'}>
+        ${listing.photos && listing.photos[0]
+          ? `<img src="${listing.photos[0]}" alt="${listing.title}" loading="lazy">`
+          : `<span class="card-icon">${listing.icon || '🏠'}</span>`}
         <span class="card-badge ${listing.featured ? 'card-badge-featured' : ''}">${listing.type}</span>
       </div>
     </a>
@@ -512,6 +550,77 @@ function openTourModal(listing) {
 }
 
 /* ── Protect pages ────────────────────────────────────────── */
+/* ── Message modal ────────────────────────────────────────── */
+function openMsgModal(otherId, otherName) {
+  const existing = document.getElementById('msg-modal');
+  if (existing) existing.remove();
+  const u = getCurrentUser();
+  if (!u) { showToast('Please sign in to send messages'); window.location.href = 'auth.html'; return; }
+  const initials = otherName.split(' ').filter(w => w).map(w => w[0]).join('').slice(0, 2).toUpperCase();
+
+  function fmtTime(ts) {
+    const d = new Date(ts), now = new Date();
+    const diff = Math.floor((now - d) / 86400000);
+    if (diff === 0) return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    if (diff === 1) return 'Yesterday';
+    if (diff < 7) return d.toLocaleDateString([], { weekday: 'short' });
+    return d.toLocaleDateString([], { month: 'short', day: 'numeric' });
+  }
+
+  function buildThreadHtml() {
+    const msgs = getConvMsgs(otherId);
+    if (!msgs.length) return `<div class="msg-empty">Say hello to ${otherName}! 👋</div>`;
+    return msgs.map(m => `
+      <div class="msg-bubble ${m.from === u.id ? 'msg-mine' : 'msg-theirs'}">
+        <div class="msg-text">${m.text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}</div>
+        <div class="msg-ts">${fmtTime(m.ts)}</div>
+      </div>`).join('');
+  }
+
+  const modal = document.createElement('div');
+  modal.id = 'msg-modal';
+  modal.className = 'modal-overlay';
+  modal.setAttribute('role', 'dialog'); modal.setAttribute('aria-modal', 'true');
+  modal.innerHTML = `
+    <div class="modal-box" style="max-width:480px;display:flex;flex-direction:column;height:560px;padding:0;overflow:hidden;">
+      <div class="modal-header" style="padding:16px 20px;flex-shrink:0;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--teal-600),var(--purple-600));color:white;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;">${initials}</div>
+          <div><div style="font-weight:800;font-size:15px;">${otherName}</div><div style="font-size:12px;color:var(--gray-500);">Roommate Match</div></div>
+        </div>
+        <button class="modal-close" aria-label="Close">&times;</button>
+      </div>
+      <div class="msg-thread" id="modal-msg-thread">${buildThreadHtml()}</div>
+      <div class="msg-input-row">
+        <input type="text" id="modal-msg-input" placeholder="Type a message…" maxlength="500">
+        <button class="btn btn-primary" id="modal-msg-send" style="border-radius:var(--radius-full);padding:10px 20px;">Send</button>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+  document.body.style.overflow = 'hidden';
+
+  const thread = document.getElementById('modal-msg-thread');
+  thread.scrollTop = thread.scrollHeight;
+
+  const close = () => { modal.remove(); document.body.style.overflow = ''; };
+  modal.querySelector('.modal-close').addEventListener('click', close);
+  modal.addEventListener('click', e => { if (e.target === modal) close(); });
+  document.addEventListener('keydown', function esc(e) { if (e.key === 'Escape') { close(); document.removeEventListener('keydown', esc); } });
+
+  const input = document.getElementById('modal-msg-input');
+  const doSend = () => {
+    const txt = input.value.trim();
+    if (!txt) return;
+    sendMsg(otherId, otherName, txt);
+    input.value = '';
+    thread.innerHTML = buildThreadHtml();
+    thread.scrollTop = thread.scrollHeight;
+  };
+  document.getElementById('modal-msg-send').addEventListener('click', doSend);
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') doSend(); });
+  setTimeout(() => input.focus(), 50);
+}
+
 function requireAuth(redirectBack) {
   if (!getCurrentUser()) {
     window.location.href = 'auth.html' + (redirectBack ? '?next=' + encodeURIComponent(window.location.href) : '');

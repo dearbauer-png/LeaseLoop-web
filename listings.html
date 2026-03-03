@@ -17,6 +17,7 @@
       <li><a href="index.html">Home</a></li>
       <li><a href="listings.html" class="active-nav">Browse Listings</a></li>
       <li><a href="roommates.html">Find Roommates</a></li>
+      <li><a href="messages.html">💬 Messages</a></li>
       <li><a href="dashboard.html">Dashboard</a></li>
     </ul>
     <div class="navbar-right" id="navbar-right"></div>
@@ -148,8 +149,15 @@
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label for="p-price">Monthly Rent ($) *</label>
+            <label for="p-price">Rent ($) *</label>
             <input type="number" id="p-price" placeholder="850" min="0" required>
+          </div>
+          <div class="form-group">
+            <label for="p-price-unit">Price Per</label>
+            <select id="p-price-unit">
+              <option value="month">Per Month</option>
+              <option value="person/month">Per Person / Month</option>
+            </select>
           </div>
           <div class="form-group">
             <label for="p-campus">Campus *</label>
@@ -228,6 +236,60 @@
           <label class="checkbox-item"><input type="checkbox" value="Backyard"> Backyard</label>
           <label class="checkbox-item"><input type="checkbox" value="Pet friendly"> Pet Friendly</label>
           <label class="checkbox-item"><input type="checkbox" value="WiFi included"> WiFi Incl.</label>
+        </div>
+        <div class="form-section-title" style="margin-top:16px;">📸 Property Photos</div>
+        <div class="photo-upload-zone" id="photo-upload-zone">
+          <input type="file" id="p-photos" accept="image/*" multiple style="display:none">
+          <label for="p-photos" style="cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--gray-500);">
+            <span style="font-size:32px;">📷</span>
+            <span style="font-weight:600;">Click to upload property photos</span>
+            <span style="font-size:12px;">JPG, PNG, WebP · Up to 5 photos</span>
+          </label>
+        </div>
+        <div class="photo-preview-strip hidden" id="photo-preview-strip"></div>
+        <p class="form-section-title" style="margin-top:16px;">🔧 Additional Details</p>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="p-deposit">Security Deposit ($)</label>
+            <input type="number" id="p-deposit" placeholder="e.g. 850" min="0">
+          </div>
+          <div class="form-group">
+            <label for="p-year-built">Year Built</label>
+            <input type="number" id="p-year-built" placeholder="e.g. 2015" min="1900" max="2030">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="p-laundry">Laundry</label>
+            <select id="p-laundry">
+              <option value="">Not listed</option>
+              <option value="In-unit W/D">In-unit W/D</option>
+              <option value="Washer/dryer hookups">Washer/dryer hookups</option>
+              <option value="Shared laundry">Shared laundry</option>
+              <option value="No laundry">No laundry on-site</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="p-floor">Floor / Story</label>
+            <input type="text" id="p-floor" placeholder="e.g. 2nd floor, Ground floor">
+          </div>
+        </div>
+        <p class="form-section-title">💡 Utilities Included</p>
+        <div class="checkbox-group" id="utilities-check">
+          <label class="checkbox-item"><input type="checkbox" value="Water"> Water</label>
+          <label class="checkbox-item"><input type="checkbox" value="Electricity"> Electricity</label>
+          <label class="checkbox-item"><input type="checkbox" value="Gas"> Gas</label>
+          <label class="checkbox-item"><input type="checkbox" value="Internet"> Internet</label>
+          <label class="checkbox-item"><input type="checkbox" value="Trash"> Trash</label>
+          <label class="checkbox-item"><input type="checkbox" value="All included"> All included</label>
+        </div>
+        <div class="form-group" style="margin-top:12px;">
+          <label for="p-virtual-tour">🎥 Virtual Tour URL</label>
+          <input type="url" id="p-virtual-tour" placeholder="https://my.matterport.com/... or YouTube link">
+        </div>
+        <div class="form-group">
+          <label for="p-showing">🗓 Showing Instructions</label>
+          <textarea id="p-showing" rows="2" placeholder="e.g. Contact 24 hours in advance. Available weekdays 10am–5pm."></textarea>
         </div>
         <div class="form-group" style="margin-top:16px;">
           <label for="p-desc">Description *</label>
@@ -338,7 +400,13 @@
       grid.classList.add('hidden'); empty.classList.remove('hidden');
     } else {
       grid.classList.remove('hidden'); empty.classList.add('hidden');
-      res.forEach(l => grid.appendChild(buildCard(l, 'details.html')));
+      res.forEach((l, idx) => {
+        grid.appendChild(buildCard(l, 'details.html'));
+        if (typeof SPONSORS !== 'undefined' && (idx + 1) % 6 === 0) {
+          const sp = SPONSORS[Math.floor(idx / 6) % SPONSORS.length];
+          grid.appendChild(buildSponsorCard(sp));
+        }
+      });
     }
   }
 
@@ -382,7 +450,7 @@
       id: Date.now(),
       title:        document.getElementById('p-title').value.trim(),
       price:        parseFloat(document.getElementById('p-price').value),
-      priceUnit:    'month',
+      priceUnit:    document.getElementById('p-price-unit').value,
       location:     document.getElementById('p-address').value || ('Near ' + document.getElementById('p-campus').value),
       city:         document.getElementById('p-campus').value + ', TX',
       campus:       document.getElementById('p-campus').value,
@@ -394,7 +462,7 @@
       leaseLength:  document.getElementById('p-lease').value,
       petPolicy:    document.getElementById('p-pets').value,
       parking:      document.getElementById('p-parking').value,
-      utilities:    [],
+      utilities:    [...document.querySelectorAll('#utilities-check input:checked')].map(i => i.value),
       description:  document.getElementById('p-desc').value.trim(),
       amenities:    amenities,
       landlord:     user ? user.name : 'Landlord',
@@ -405,6 +473,13 @@
       featured:     false, saved: false, icon: '🏠',
       rating: 5.0, reviews: 0, views: 0, inquiries: 0,
       status: 'available', postedBy: user ? user.id : null,
+      photos:       window._pendingPhotos || [],
+      securityDeposit: parseInt(document.getElementById('p-deposit').value) || 0,
+      yearBuilt:    parseInt(document.getElementById('p-year-built').value) || 0,
+      laundry:      document.getElementById('p-laundry').value || '',
+      floor:        document.getElementById('p-floor').value || '',
+      virtualTour:  document.getElementById('p-virtual-tour').value || '',
+      showingInstructions: document.getElementById('p-showing').value.trim() || '',
     };
     addUserListing(newListing);
     postModal.classList.add('hidden');
@@ -412,12 +487,63 @@
     showToast('✅ Listing posted successfully!');
     applyFilters();
     e.target.reset();
+    window._pendingPhotos = [];
+    const strip = document.getElementById('photo-preview-strip');
+    strip.innerHTML = ''; strip.classList.add('hidden');
   });
 
   // Open post modal if action=post in URL
   if (params.get('action') === 'post') setTimeout(openPost, 400);
 
   window.onCampusChange = () => applyFilters();
+
+  // Photo upload preview
+  window._pendingPhotos = [];
+  document.getElementById('p-photos').addEventListener('change', function(e) {
+    const files = Array.from(e.target.files).slice(0, 5);
+    const strip = document.getElementById('photo-preview-strip');
+    strip.innerHTML = '';
+    window._pendingPhotos = [];
+    if (!files.length) { strip.classList.add('hidden'); return; }
+    strip.classList.remove('hidden');
+    files.forEach(file => {
+      const reader = new FileReader();
+      reader.onload = ev => {
+        window._pendingPhotos.push(ev.target.result);
+        const thumb = document.createElement('div');
+        thumb.className = 'photo-preview-thumb';
+        thumb.style.backgroundImage = 'url(' + ev.target.result + ')';
+        strip.insertBefore(thumb, strip.lastElementChild);
+      };
+      reader.readAsDataURL(file);
+    });
+    // Clear button
+    const clearBtn = document.createElement('button');
+    clearBtn.type = 'button';
+    clearBtn.textContent = '✕ Clear photos';
+    clearBtn.className = 'btn btn-ghost btn-sm';
+    clearBtn.style.cssText = 'align-self:center;';
+    clearBtn.onclick = () => {
+      window._pendingPhotos = [];
+      strip.innerHTML = '';
+      strip.classList.add('hidden');
+      document.getElementById('p-photos').value = '';
+    };
+    strip.appendChild(clearBtn);
+  });
+
+  function buildSponsorCard(sp) {
+    const card = document.createElement('div');
+    card.className = 'sponsor-listing-card';
+    card.innerHTML = '<span class="sponsor-listing-label">Sponsored</span>' +
+      '<div class="sponsor-listing-content" style="background:' + sp.gradient + ';">' +
+      '<div class="sponsor-listing-emoji">' + sp.emoji + '</div>' +
+      '<div class="sponsor-listing-name">' + sp.name + '</div>' +
+      '<div class="sponsor-listing-tagline">' + sp.tagline + '</div>' +
+      '<a href="' + sp.url + '" class="btn btn-white btn-sm" style="margin-top:12px;">' + sp.cta + ' →</a>' +
+      '</div>';
+    return card;
+  }
 
   // Page segment tabs
   document.querySelectorAll('.page-segment-tab').forEach(btn => {

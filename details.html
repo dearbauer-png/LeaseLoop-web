@@ -17,6 +17,7 @@
       <li><a href="index.html">Home</a></li>
       <li><a href="listings.html" class="active-nav">Browse Listings</a></li>
       <li><a href="roommates.html">Find Roommates</a></li>
+      <li><a href="messages.html">💬 Messages</a></li>
       <li><a href="dashboard.html">Dashboard</a></li>
     </ul>
     <div class="navbar-right" id="navbar-right"></div>
@@ -70,8 +71,15 @@
 
     root.innerHTML = `
       <!-- Hero image -->
-      <div class="detail-hero">
-        <span class="detail-hero-icon">${listing.icon || '🏠'}</span>
+      <div class="detail-hero ${listing.photos && listing.photos.length ? 'detail-hero-gallery' : ''}">
+        ${listing.photos && listing.photos.length
+          ? `<div class="detail-photo-gallery">
+              <div class="detail-photo-main"><img src="${listing.photos[0]}" alt="${listing.title}" id="gallery-main-img"></div>
+              ${listing.photos.length > 1
+                ? `<div class="detail-photo-thumbs">${listing.photos.slice(0,5).map((p,i)=>`<div class="detail-photo-thumb${i===0?' active':''}" data-idx="${i}" data-src="${p}"></div>`).join('')}</div>`
+                : ''}
+            </div>`
+          : `<span class="detail-hero-icon">${listing.icon || '🏠'}</span>`}
         <span class="detail-hero-badge">${listing.type}</span>
         <button class="detail-hero-save ${saved ? 'saved' : ''}" id="detail-save-btn" aria-label="${saved ? 'Unsave' : 'Save'} listing">
           ${saved ? '♥' : '♡'}
@@ -102,6 +110,11 @@
             <h3>About This Property</h3>
             <p>${listing.description}</p>
           </div>
+
+          ${listing.virtualTour ? `
+          <div class="detail-section">
+            <a href="${listing.virtualTour}" target="_blank" rel="noopener" class="btn btn-outline btn-lg" style="display:inline-flex;align-items:center;gap:8px;">🎥 View Virtual Tour</a>
+          </div>` : ''}
 
           <!-- Amenities -->
           ${listing.amenities && listing.amenities.length ? `
@@ -168,6 +181,8 @@
             <button class="btn btn-ghost btn-sm" style="flex:1;border:1px solid var(--gray-200);" id="btn-share">🔗 Share</button>
             <button class="btn btn-ghost btn-sm" style="flex:1;border:1px solid var(--gray-200);" id="btn-report">⚠️ Report</button>
           </div>
+          <!-- Sponsor slot -->
+          <div id="detail-sponsor-slot"></div>
         </div>
       </div>`;
 
@@ -197,6 +212,36 @@
 
     // Report
     document.getElementById('btn-report').addEventListener('click', () => showToast('Thank you — our team will review this listing.'));
+
+    // Gallery thumbnails
+    document.querySelectorAll('.detail-photo-thumb').forEach(t => {
+      t.style.backgroundImage = 'url(' + t.dataset.src + ')';
+      t.addEventListener('click', () => {
+        document.getElementById('gallery-main-img').src = t.dataset.src;
+        document.querySelectorAll('.detail-photo-thumb').forEach(x => x.classList.remove('active'));
+        t.classList.add('active');
+      });
+    });
+
+    // Sponsor slot
+    if (typeof SPONSORS !== 'undefined' && SPONSORS.length) {
+      const sp = SPONSORS[listing.id % SPONSORS.length];
+      const sponsorEl = document.getElementById('detail-sponsor-slot');
+      if (sponsorEl) {
+        sponsorEl.innerHTML = `
+          <div class="sponsor-card-inline">
+            <div class="sponsor-card-inline-header" style="background:${sp.gradient};">
+              <div class="sponsor-card-inline-badge">Sponsored</div>
+              <span class="sponsor-card-inline-emoji">${sp.emoji}</span>
+              <div class="sponsor-card-inline-name">${sp.name}</div>
+            </div>
+            <div class="sponsor-card-inline-body">
+              <p class="sponsor-card-inline-tagline">${sp.tagline}</p>
+              <a href="${sp.url}" class="btn btn-primary btn-sm btn-block" style="width:100%;text-align:center;">${sp.cta} →</a>
+            </div>
+          </div>`;
+      }
+    }
 
     // Similar listings
     const similar = all.filter(l => l.id !== listing.id && (l.campus === listing.campus || l.type === listing.type))
