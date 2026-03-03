@@ -13,7 +13,7 @@ const PASSES_KEY = 'll_rm_passes';
 
 /* ── Campus helpers ───────────────────────────────────────── */
 function getCurrentCampus() {
-  return localStorage.getItem(CAMPUS_KEY) || 'UT Austin';
+  return localStorage.getItem(CAMPUS_KEY) || 'TCU';
 }
 function setCurrentCampus(c) {
   localStorage.setItem(CAMPUS_KEY, c);
@@ -21,8 +21,8 @@ function setCurrentCampus(c) {
 
 /* ── Seed demo accounts (pre-loaded on first visit) ──────── */
 const DEMO_USERS = [
-  { id: 'demo_student', name: 'Alex Demo', email: 'student@demo.com', password: 'demo123', type: 'student', campus: 'UT Austin', bio: 'Junior at UT Austin. Looking for a 2BR near campus for fall semester.', avatar: '🎓', joined: '2025-08-01' },
-  { id: 'demo_realtor', name: 'Sam Realty', email: 'realtor@demo.com', password: 'demo123', type: 'realtor', campus: 'UT Austin', agency: 'Austin Campus Rentals', bio: 'Specializing in student housing near UT Austin and surrounding campuses.', avatar: '🏢', joined: '2025-08-01' },
+  { id: 'demo_student', name: 'Alex Demo', email: 'student@demo.com', password: 'demo123', type: 'student', campus: 'TCU', bio: 'Junior at TCU. Looking for a 2BR near campus for fall semester. Go Frogs! 🐸', avatar: '🎓', joined: '2025-08-01' },
+  { id: 'demo_realtor', name: 'Sam Realty', email: 'realtor@demo.com', password: 'demo123', type: 'realtor', campus: 'TCU', agency: 'Fort Worth Campus Rentals', bio: 'Specializing in student housing near TCU and surrounding campuses.', avatar: '🏢', joined: '2025-08-01' },
 ];
 
 /* ── User store ───────────────────────────────────────────── */
@@ -62,7 +62,7 @@ function register(data) {
     email:        data.email.trim().toLowerCase(),
     password:     data.password,           // ⚠️ DEMO ONLY — plaintext. In production use bcrypt/argon2 server-side.
     type:         data.type,               // 'student' | 'realtor'
-    campus:       data.campus || 'UT Austin',
+    campus:       data.campus || 'TCU',
     phone:        data.phone  || '',
     major:        data.major  || '',
     year:         data.year   || '',
@@ -233,13 +233,13 @@ function initNavbar() {
   if (!rightEl) return;
   if (user) {
     rightEl.innerHTML = `
-      <a href="dashboard.html" class="user-avatar-btn" title="${user.name}" style="display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--blue-600),var(--green-600));color:white;font-size:14px;font-weight:700;text-decoration:none;">
+      <a href="dashboard.html" class="user-avatar-btn" title="${user.name}" style="display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--teal-600),var(--purple-700));color:white;font-size:14px;font-weight:700;text-decoration:none;">
         ${user.name.charAt(0).toUpperCase()}
       </a>`;
   } else {
     rightEl.innerHTML = `
       <a href="auth.html" class="btn btn-outline btn-sm">Log In</a>
-      <a href="auth.html?tab=register" class="btn btn-green btn-sm">Sign Up</a>`;
+      <a href="auth.html?tab=register" class="btn btn-primary btn-sm">Sign Up</a>`;
   }
 }
 
@@ -326,6 +326,8 @@ function buildCard(listing, targetPage) {
   const page  = targetPage || 'details.html';
   const card  = document.createElement('article');
   card.className = 'listing-card';
+  card.setAttribute('data-type', listing.type || '');
+  card.setAttribute('data-tcu', listing.campus === 'TCU' ? 'true' : 'false');
   card.innerHTML = `
     <a class="card-img-link" href="${page}?id=${listing.id}" aria-label="View ${listing.title}">
       <div class="card-img" role="img" aria-label="${listing.type}">

@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="LeaseLoop — Student housing made simple. Find apartments, houses, and roommates near your campus.">
-  <title>LeaseLoop — Student Housing Marketplace</title>
+  <meta name="description" content="LeaseLoops — TCU's student housing community. Find apartments, subleases & roommates near campus.">
+  <title>LeaseLoops — TCU Student Housing</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
 <nav class="navbar" role="navigation" aria-label="Main navigation">
   <div class="navbar-inner">
-    <a href="index.html" class="navbar-brand">🔄 LeaseLoop</a>
+    <a href="index.html" class="navbar-brand">🐸♾️ LeaseLoops</a>
     <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
       <span></span><span></span><span></span>
     </button>
@@ -22,41 +22,55 @@
       <li><a href="dashboard.html">Dashboard</a></li>
     </ul>
     <div class="navbar-right" id="navbar-right"><!-- auth injected by JS --></div>
-    <button class="campus-chip" id="campus-chip" aria-label="Switch campus">🎓 UT Austin ▼</button>
+    <button class="campus-chip" id="campus-chip" aria-label="Switch campus">🐸 TCU ▼</button>
   </div>
 </nav>
 
 <!-- Hero -->
 <section class="hero" aria-labelledby="hero-heading">
   <div class="hero-inner">
-    <span class="hero-badge">🎓 Built for College Students</span>
-    <h1 id="hero-heading">Find Your Perfect <br><span id="hero-campus-name">Student Home</span></h1>
-    <p class="hero-sub">Browse apartments, houses, studios &amp; subleases near top universities. No broker fees. No hassle.</p>
+    <div class="hero-logo-block">
+      <span class="hero-logo-icon">🐸♾️</span>
+      <div class="hero-logo-wordmark">LeaseLoops</div>
+      <div class="hero-logo-tagline">Connecting Student Homes</div>
+    </div>
+    <h1 id="hero-heading">Find Your Home at <span id="hero-campus-name">TCU</span> 🏡</h1>
+    <p class="hero-sub">Student housing near TCU — no broker fees, no hassle. By Horned Frogs, for Horned Frogs. 🐸</p>
+
+    <!-- Segmented control -->
+    <div class="segment-tabs" role="tablist" aria-label="Browse by type">
+      <button class="segment-tab active" data-tab="all" role="tab" aria-selected="true">🏠 All Listings</button>
+      <button class="segment-tab" data-tab="sublease" role="tab" aria-selected="false">🔑 Subleases</button>
+      <button class="segment-tab" data-tab="roommates" role="tab" aria-selected="false">👥 Roommates</button>
+    </div>
+
     <form class="search-box" id="hero-search-form" role="search" aria-label="Search listings">
-      <input type="text" id="hero-q" placeholder="Search by keyword, address, or amenity…" aria-label="Search">
-      <select id="hero-campus" aria-label="Select campus">
+      <input type="text" id="hero-q" placeholder="Search TCU housing &amp; roommates…" aria-label="Search">
+      <!-- hidden selects preserved for search logic -->
+      <select id="hero-campus" aria-label="Select campus" aria-hidden="true" tabindex="-1" style="display:none">
         <option value="">All Campuses</option>
+        <option value="TCU">TCU</option>
         <option value="UT Austin">UT Austin</option>
         <option value="Baylor">Baylor</option>
         <option value="Texas A&amp;M">Texas A&amp;M</option>
-        <option value="TCU">TCU</option>
         <option value="SMU">SMU</option>
         <option value="UNT">UNT</option>
         <option value="Texas Tech">Texas Tech</option>
         <option value="University of Houston">U of Houston</option>
       </select>
-      <select id="hero-type" aria-label="Property type">
+      <select id="hero-type" aria-label="Property type" aria-hidden="true" tabindex="-1" style="display:none">
         <option value="">Any Type</option>
         <option>Apartment</option><option>House</option><option>Studio</option>
         <option>Room</option><option>Sublease</option><option>Condo</option>
       </select>
       <button type="submit" class="btn-search">🔍 Search</button>
     </form>
+
     <div class="hero-stats" aria-label="Platform stats">
       <div class="hero-stat"><div class="hero-stat-num" id="stat-listings">200+</div><div class="hero-stat-label">Active Listings</div></div>
-      <div class="hero-stat"><div class="hero-stat-num">8</div><div class="hero-stat-label">Campuses</div></div>
-      <div class="hero-stat"><div class="hero-stat-num">$550</div><div class="hero-stat-label">Avg. Starting Price</div></div>
-      <div class="hero-stat"><div class="hero-stat-num">4.6★</div><div class="hero-stat-label">Avg. Rating</div></div>
+      <div class="hero-stat"><div class="hero-stat-num">🐸 #1</div><div class="hero-stat-label">TCU Housing App</div></div>
+      <div class="hero-stat"><div class="hero-stat-num">$650</div><div class="hero-stat-label">Avg. Near TCU</div></div>
+      <div class="hero-stat"><div class="hero-stat-num">4.8★</div><div class="hero-stat-label">Student Rating</div></div>
     </div>
   </div>
 </section>
@@ -65,12 +79,12 @@
 <section class="section" aria-labelledby="featured-heading">
   <div class="container">
     <div class="section-header">
-      <h2 id="featured-heading">Featured Listings</h2>
-      <p>Hand-picked properties near top Texas campuses</p>
+      <h2 id="featured-heading">🐸 Featured TCU Housing</h2>
+      <p>Hand-picked places near TCU campus — perfect for Horned Frogs</p>
     </div>
     <div class="listings-grid" id="featured-grid" aria-label="Featured listings"></div>
     <div style="text-align:center;margin-top:36px;">
-      <a href="listings.html" class="btn btn-primary btn-lg">View All Listings →</a>
+      <a href="listings.html?campus=TCU" class="btn btn-primary btn-lg">View All TCU Listings →</a>
     </div>
   </div>
 </section>
@@ -78,32 +92,32 @@
 <!-- How It Works -->
 <section class="how-it-works section-alt" aria-labelledby="how-heading">
   <div class="section-header">
-    <h2 id="how-heading">How LeaseLoop Works</h2>
-    <p>Finding student housing shouldn't be stressful</p>
+    <h2 id="how-heading">How LeaseLoops Works</h2>
+    <p>Finding student housing shouldn't stress you out 😌</p>
   </div>
   <div class="steps-grid container" role="list">
     <div class="step-card" role="listitem">
-      <div class="step-icon-wrap">🎓</div>
+      <div class="step-icon-wrap">🐸</div>
       <p class="step-num">Step 1</p>
-      <h3>Set Your Campus</h3>
-      <p>Choose your university and we'll show listings tailored to your area.</p>
+      <h3>Pick Your Campus</h3>
+      <p>Choose TCU (or any campus) and we'll show listings tailored to your area.</p>
     </div>
     <div class="step-card" role="listitem">
       <div class="step-icon-wrap">🔍</div>
       <p class="step-num">Step 2</p>
       <h3>Search &amp; Filter</h3>
-      <p>Filter by price, bedrooms, type, and distance to narrow down your options.</p>
+      <p>Filter by price, bedrooms, and type to find your perfect spot near campus.</p>
     </div>
     <div class="step-card" role="listitem">
       <div class="step-icon-wrap">❤️</div>
       <p class="step-num">Step 3</p>
       <h3>Save Favorites</h3>
-      <p>Save listings and roommate matches to compare later in your dashboard.</p>
+      <p>Save listings and roommate matches to compare in your dashboard.</p>
     </div>
     <div class="step-card" role="listitem">
       <div class="step-icon-wrap">💬</div>
       <p class="step-num">Step 4</p>
-      <h3>Contact &amp; Move In</h3>
+      <h3>Move In!</h3>
       <p>Message landlords, schedule tours, and sign your lease — all in one place.</p>
     </div>
   </div>
@@ -124,26 +138,26 @@
 <section class="section section-alt" aria-labelledby="rm-teaser-heading">
   <div class="container" style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;">
     <div>
-      <h2 id="rm-teaser-heading" style="font-size:30px;font-weight:800;margin-bottom:12px;">Find the Perfect Roommate 💑</h2>
-      <p style="font-size:17px;color:var(--gray-500);margin-bottom:24px;">Our roommate finder works like a dating app — swipe through profiles, match with compatible students, and find your next roommate before the semester starts.</p>
+      <h2 id="rm-teaser-heading" style="font-size:28px;font-weight:800;margin-bottom:12px;color:var(--teal-600);">Find Your Perfect TCU Roommate 💑</h2>
+      <p style="font-size:16px;color:var(--gray-600);margin-bottom:24px;font-weight:500;">Our roommate finder works like a dating app — swipe through profiles, match with TCU students, and find your next roommate before the semester starts.</p>
       <ul style="list-style:none;display:flex;flex-direction:column;gap:12px;margin-bottom:28px;">
-        <li style="display:flex;align-items:center;gap:10px;font-size:15px;color:var(--gray-700);"><span style="font-size:20px;">✅</span> Filter by campus, budget, sleep schedule</li>
-        <li style="display:flex;align-items:center;gap:10px;font-size:15px;color:var(--gray-700);"><span style="font-size:20px;">✅</span> Match when both students like each other</li>
-        <li style="display:flex;align-items:center;gap:10px;font-size:15px;color:var(--gray-700);"><span style="font-size:20px;">✅</span> Message matches to coordinate move-in</li>
+        <li style="display:flex;align-items:center;gap:10px;font-size:15px;color:var(--gray-700);font-weight:600;"><span style="font-size:20px;">✅</span> Filter by campus, budget, sleep schedule</li>
+        <li style="display:flex;align-items:center;gap:10px;font-size:15px;color:var(--gray-700);font-weight:600;"><span style="font-size:20px;">✅</span> Match when both students like each other</li>
+        <li style="display:flex;align-items:center;gap:10px;font-size:15px;color:var(--gray-700);font-weight:600;"><span style="font-size:20px;">✅</span> Message matches to coordinate move-in</li>
       </ul>
       <a href="roommates.html" class="btn btn-primary btn-lg">Try Roommate Finder →</a>
     </div>
-    <div style="text-align:center;font-size:120px;line-height:1;">🏠❤️🤝</div>
+    <div style="text-align:center;font-size:100px;line-height:1;">🐸❤️🏠</div>
   </div>
 </section>
 
 <!-- Realtor CTA -->
 <section class="cta-banner" aria-labelledby="cta-heading">
-  <h2 id="cta-heading">Are You a Realtor or Landlord?</h2>
-  <p>List your property on LeaseLoop and connect with thousands of college students looking for housing.</p>
+  <h2 id="cta-heading">Got a Property Near TCU? 🏡</h2>
+  <p>List on LeaseLoops and connect with thousands of TCU students looking for housing every semester.</p>
   <div class="cta-btns">
     <a href="auth.html?tab=register&type=realtor" class="btn btn-white btn-lg">List My Property</a>
-    <a href="listings.html" class="btn btn-outline-white btn-lg">Browse Listings</a>
+    <a href="listings.html?campus=TCU" class="btn btn-outline-white btn-lg">Browse TCU Listings</a>
   </div>
 </section>
 
@@ -152,13 +166,13 @@
   <div class="footer-inner">
     <div class="footer-grid">
       <div>
-        <div class="footer-brand">🔄 LeaseLoop</div>
-        <p class="footer-tagline">Student housing, simplified. Find your next home near campus without the hassle.</p>
+        <div class="footer-brand">🐸♾️ LeaseLoops</div>
+        <p class="footer-tagline">Connecting Student Homes — TCU's favorite housing marketplace.</p>
       </div>
       <div class="footer-col">
         <h4>Browse</h4>
         <ul>
-          <li><a href="listings.html">All Listings</a></li>
+          <li><a href="listings.html?campus=TCU">TCU Listings</a></li>
           <li><a href="listings.html?type=Apartment">Apartments</a></li>
           <li><a href="listings.html?type=House">Houses</a></li>
           <li><a href="listings.html?type=Sublease">Subleases</a></li>
@@ -184,8 +198,8 @@
       </div>
     </div>
     <div class="footer-bottom">
-      <span>© 2025 LeaseLoop. All rights reserved.</span>
-      <span>Made for college students 🎓</span>
+      <span>© 2025 LeaseLoops. All rights reserved.</span>
+      <span>By Horned Frogs, for Horned Frogs 🐸</span>
     </div>
   </div>
 </footer>
@@ -196,27 +210,55 @@
 <script>
   // Campus hero display
   const campus = getCurrentCampus();
-  document.getElementById('hero-campus-name').textContent = campus + ' Housing';
+  document.getElementById('hero-campus-name').textContent = campus;
   document.getElementById('hero-campus').value = campus;
+
+  // Segmented control: set type filter for hero search
+  let heroTab = 'all';
+  document.querySelectorAll('.segment-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.segment-tab').forEach(b => {
+        b.classList.remove('active'); b.setAttribute('aria-selected', 'false');
+      });
+      btn.classList.add('active'); btn.setAttribute('aria-selected', 'true');
+      heroTab = btn.dataset.tab;
+      if (heroTab === 'roommates') {
+        window.location.href = 'roommates.html';
+        return;
+      }
+      // Re-render featured grid based on tab
+      renderFeatured(heroTab);
+    });
+  });
+
+  function renderFeatured(tab) {
+    const allL = getAllListings();
+    // Show listings for the active campus (or featured ones from any campus)
+    let pool = allL.filter(l => l.campus === campus || l.featured);
+    if (tab === 'sublease') pool = pool.filter(l => l.type === 'Sublease');
+    // Prioritise current campus first
+    pool.sort((a, b) => (b.campus === campus ? 1 : 0) - (a.campus === campus ? 1 : 0));
+    const grid = document.getElementById('featured-grid');
+    grid.innerHTML = '';
+    pool.slice(0, 6).forEach(l => grid.appendChild(buildCard(l, 'details.html')));
+    if (pool.length === 0) grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--gray-500);padding:40px;">No listings found — try another filter!</p>';
+  }
 
   // Hero search
   document.getElementById('hero-search-form').addEventListener('submit', e => {
     e.preventDefault();
     const q = document.getElementById('hero-q').value.trim();
     const c = document.getElementById('hero-campus').value;
-    const t = document.getElementById('hero-type').value;
     const p = new URLSearchParams();
     if (q) p.set('q', q);
     if (c) p.set('campus', c);
-    if (t) p.set('type', t);
+    if (heroTab === 'sublease') p.set('type', 'Sublease');
     window.location.href = 'listings.html?' + p.toString();
   });
 
-  // Featured listings
+  // Initial render
   const allL = getAllListings();
-  const featured = allL.filter(l => l.featured).slice(0, 6);
-  const grid = document.getElementById('featured-grid');
-  featured.forEach(l => grid.appendChild(buildCard(l, 'details.html')));
+  renderFeatured('all');
   document.getElementById('stat-listings').textContent = allL.length + '+';
 
   // Campus cards
@@ -236,8 +278,9 @@
 
   // Re-render on campus change
   window.onCampusChange = function(newCampus) {
-    document.getElementById('hero-campus-name').textContent = newCampus + ' Housing';
+    document.getElementById('hero-campus-name').textContent = newCampus;
     document.getElementById('hero-campus').value = newCampus;
+    renderFeatured(heroTab);
   };
 </script>
 </body>
