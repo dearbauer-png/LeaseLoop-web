@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Browse Listings — LeaseLoop</title>
+  <title>Browse Listings — LeaseLoops</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <nav class="navbar" role="navigation" aria-label="Main navigation">
   <div class="navbar-inner">
-    <a href="index.html" class="navbar-brand">🔄 LeaseLoop</a>
+    <a href="index.html" class="navbar-brand">🐸♾️ LeaseLoops</a>
     <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
       <span></span><span></span><span></span>
     </button>
@@ -20,17 +20,24 @@
       <li><a href="dashboard.html">Dashboard</a></li>
     </ul>
     <div class="navbar-right" id="navbar-right"></div>
-    <button class="campus-chip" id="campus-chip" aria-label="Switch campus">🎓 Campus ▼</button>
+    <button class="campus-chip" id="campus-chip" aria-label="Switch campus">🐸 TCU ▼</button>
   </div>
 </nav>
 
 <div class="page-band">
   <div class="container">
     <div>
-      <h1>Browse Student Housing</h1>
+      <h1>🏠 Browse Student Housing</h1>
       <p>Apartments, houses, studios &amp; subleases near your campus</p>
+      <div class="page-segment-tabs" role="tablist" aria-label="Filter by category">
+        <button class="page-segment-tab active" data-type="" role="tab" aria-selected="true">🏠 All Listings</button>
+        <button class="page-segment-tab" data-type="Sublease" role="tab" aria-selected="false">🔑 Subleases</button>
+        <button class="page-segment-tab" data-type="Roommate" role="tab" aria-selected="false">👥 Roommates</button>
+        <button class="page-segment-tab" data-type="Apartment" role="tab" aria-selected="false">🏢 Apartments</button>
+        <button class="page-segment-tab" data-type="House" role="tab" aria-selected="false">🏡 Houses</button>
+      </div>
     </div>
-    <a href="#" class="btn btn-green" id="btn-post-listing">+ List a Property</a>
+    <a href="#" class="btn btn-primary" id="btn-post-listing">+ Post Listing</a>
   </div>
 </div>
 
@@ -246,7 +253,7 @@
   <div class="footer-inner">
     <div class="footer-grid">
       <div>
-        <div class="footer-brand">🔄 LeaseLoop</div>
+        <div class="footer-brand">🐸♾️ LeaseLoops</div>
         <p class="footer-tagline">Student housing, simplified.</p>
       </div>
       <div class="footer-col"><h4>Browse</h4><ul>
@@ -411,6 +418,20 @@
   if (params.get('action') === 'post') setTimeout(openPost, 400);
 
   window.onCampusChange = () => applyFilters();
+
+  // Page segment tabs
+  document.querySelectorAll('.page-segment-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (btn.dataset.type === 'Roommate') { window.location.href = 'roommates.html'; return; }
+      document.querySelectorAll('.page-segment-tab').forEach(b => {
+        b.classList.remove('active'); b.setAttribute('aria-selected', 'false');
+      });
+      btn.classList.add('active'); btn.setAttribute('aria-selected', 'true');
+      ft.value = btn.dataset.type || '';
+      applyFilters();
+    });
+  });
+
   applyFilters();
 </script>
 </body>

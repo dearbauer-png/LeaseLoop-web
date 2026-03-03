@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sign In / Register — LeaseLoop</title>
+  <title>Sign In — LeaseLoops</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body style="background:var(--gray-100);">
 <nav class="navbar" role="navigation">
   <div class="navbar-inner">
-    <a href="index.html" class="navbar-brand">🔄 LeaseLoop</a>
+    <a href="index.html" class="navbar-brand">🐸♾️ LeaseLoops</a>
     <div class="navbar-right" id="navbar-right"></div>
   </div>
 </nav>
@@ -17,8 +17,8 @@
 <main class="auth-page" aria-label="Authentication">
   <div class="auth-card">
     <div class="auth-header">
-      <h1>🔄 LeaseLoop</h1>
-      <p>Student housing, simplified</p>
+      <h1>🐸♾️ LeaseLoops</h1>
+      <p>TCU's Student Housing Community 🐸</p>
     </div>
 
     <!-- Tabs -->
@@ -92,9 +92,9 @@
           <label for="r-campus">Campus / University</label>
           <select id="r-campus" required>
             <option value="">Select your campus…</option>
-            <option>UT Austin</option><option>Baylor</option><option>Texas A&amp;M</option>
-            <option>TCU</option><option>SMU</option><option>UNT</option>
-            <option>Texas Tech</option><option>University of Houston</option>
+            <option value="TCU" selected>TCU</option><option value="UT Austin">UT Austin</option><option value="Baylor">Baylor</option>
+            <option value="Texas A&M">Texas A&amp;M</option><option value="SMU">SMU</option><option value="UNT">UNT</option>
+            <option value="Texas Tech">Texas Tech</option><option value="University of Houston">University of Houston</option>
           </select>
         </div>
 
@@ -249,7 +249,7 @@
     };
     const result = register(data);
     if (result.ok) {
-      showToast('Account created! Welcome to LeaseLoop 🎉');
+      showToast('Account created! Welcome to LeaseLoops 🐸🎉');
       setTimeout(() => { window.location.href = params.get('next') || 'dashboard.html'; }, 700);
     } else {
       showError('reg', result.error);
@@ -265,7 +265,7 @@
   // Demo accounts
   document.getElementById('demo-student').addEventListener('click', () => {
     // Create or login demo student
-    const result = register({ name: 'Demo Student', email: 'student@demo.com', password: 'demo123', type: 'student', campus: 'UT Austin', major: 'Computer Science', year: 'Junior' });
+    const result = register({ name: 'Demo Student', email: 'student@demo.com', password: 'demo123', type: 'student', campus: 'TCU', major: 'Computer Science', year: 'Junior' });
     if (!result.ok) login('student@demo.com', 'demo123');
     showToast('Logged in as Demo Student 🎓');
     setTimeout(() => window.location.href = 'dashboard.html', 600);
