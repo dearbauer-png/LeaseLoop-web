@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In / Register — LeaseLoop</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body style="background:var(--gray-100);">
+<nav class="navbar" role="navigation">
+  <div class="navbar-inner">
+    <a href="index.html" class="navbar-brand">🔄 LeaseLoop</a>
+    <div class="navbar-right" id="navbar-right"></div>
+  </div>
+</nav>
+
+<main class="auth-page" aria-label="Authentication">
+  <div class="auth-card">
+    <div class="auth-header">
+      <h1>🔄 LeaseLoop</h1>
+      <p>Student housing, simplified</p>
+    </div>
+
+    <!-- Tabs -->
+    <div class="auth-tabs" role="tablist">
+      <button class="auth-tab active" id="tab-login" role="tab" aria-selected="true" aria-controls="panel-login">Log In</button>
+      <button class="auth-tab" id="tab-register" role="tab" aria-selected="false" aria-controls="panel-register">Create Account</button>
+    </div>
+
+    <!-- Login Panel -->
+    <div id="panel-login" class="auth-body" role="tabpanel">
+      <div id="login-error" class="alert alert-warning hidden"><span class="alert-icon">⚠️</span><span id="login-error-msg"></span></div>
+      <form id="login-form" novalidate>
+        <div class="form-group">
+          <label for="l-email">Email Address</label>
+          <input type="email" id="l-email" placeholder="you@university.edu" autocomplete="email" required>
+        </div>
+        <div class="form-group">
+          <label for="l-password">Password</label>
+          <input type="password" id="l-password" placeholder="••••••••" autocomplete="current-password" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-top:8px;">Log In</button>
+      </form>
+      <p class="auth-footer-text">Don't have an account? <a href="#" id="switch-to-register">Sign up free</a></p>
+      <div class="auth-divider"><span>or try a demo account</span></div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn btn-ghost btn-sm" style="flex:1;border:1px solid var(--gray-200);" id="demo-student">🎓 Student Demo</button>
+        <button class="btn btn-ghost btn-sm" style="flex:1;border:1px solid var(--gray-200);" id="demo-realtor">🏡 Realtor Demo</button>
+      </div>
+    </div>
+
+    <!-- Register Panel -->
+    <div id="panel-register" class="auth-body hidden" role="tabpanel">
+      <div id="reg-error" class="alert alert-warning hidden"><span class="alert-icon">⚠️</span><span id="reg-error-msg"></span></div>
+
+      <!-- Account type -->
+      <p style="font-size:13px;font-weight:700;color:var(--gray-600);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">I am a…</p>
+      <div class="auth-type-select">
+        <button type="button" class="auth-type-btn selected" id="type-student" aria-pressed="true">
+          <div class="auth-type-icon">🎓</div>
+          <div class="auth-type-label">Student</div>
+          <div class="auth-type-desc">Browse &amp; save listings, find roommates</div>
+        </button>
+        <button type="button" class="auth-type-btn" id="type-realtor" aria-pressed="false">
+          <div class="auth-type-icon">🏡</div>
+          <div class="auth-type-label">Realtor / Landlord</div>
+          <div class="auth-type-desc">List properties, manage inquiries</div>
+        </button>
+      </div>
+
+      <form id="reg-form" novalidate>
+        <input type="hidden" id="r-type" value="student">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="r-fname">First Name</label>
+            <input type="text" id="r-fname" placeholder="Jane" required autocomplete="given-name">
+          </div>
+          <div class="form-group">
+            <label for="r-lname">Last Name</label>
+            <input type="text" id="r-lname" placeholder="Smith" required autocomplete="family-name">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="r-email">Email Address</label>
+          <input type="email" id="r-email" placeholder="jane@university.edu" required autocomplete="email">
+        </div>
+        <div class="form-group">
+          <label for="r-phone">Phone Number</label>
+          <input type="tel" id="r-phone" placeholder="(555) 000-0000" autocomplete="tel">
+        </div>
+        <div class="form-group">
+          <label for="r-campus">Campus / University</label>
+          <select id="r-campus" required>
+            <option value="">Select your campus…</option>
+            <option>UT Austin</option><option>Baylor</option><option>Texas A&amp;M</option>
+            <option>TCU</option><option>SMU</option><option>UNT</option>
+            <option>Texas Tech</option><option>University of Houston</option>
+          </select>
+        </div>
+
+        <!-- Student-only fields -->
+        <div id="student-fields">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="r-major">Major</label>
+              <input type="text" id="r-major" placeholder="e.g. Computer Science">
+            </div>
+            <div class="form-group">
+              <label for="r-year">Year</label>
+              <select id="r-year">
+                <option value="">Select…</option>
+                <option>Freshman</option><option>Sophomore</option><option>Junior</option>
+                <option>Senior</option><option>Graduate</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Realtor-only fields -->
+        <div id="realtor-fields" class="hidden">
+          <div class="form-group">
+            <label for="r-agency">Agency / Brokerage Name</label>
+            <input type="text" id="r-agency" placeholder="e.g. Capitol City Realty">
+          </div>
+          <div class="form-group">
+            <label for="r-license">License Number (optional)</label>
+            <input type="text" id="r-license" placeholder="TX-XXXXX">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="r-password">Password</label>
+          <input type="password" id="r-password" placeholder="At least 6 characters" minlength="6" required autocomplete="new-password">
+        </div>
+        <div class="form-group">
+          <label for="r-confirm">Confirm Password</label>
+          <input type="password" id="r-confirm" placeholder="Re-enter password" required autocomplete="new-password">
+        </div>
+        <div style="margin-bottom:16px;">
+          <label style="display:flex;align-items:flex-start;gap:8px;font-size:13px;color:var(--gray-600);cursor:pointer;">
+            <input type="checkbox" id="r-terms" required style="margin-top:3px;flex-shrink:0;">
+            I agree to the <a href="#" style="color:var(--blue-600);">Terms of Service</a> and <a href="#" style="color:var(--blue-600);">Privacy Policy</a>
+          </label>
+        </div>
+        <button type="submit" class="btn btn-green btn-block btn-lg">Create Account</button>
+      </form>
+      <p class="auth-footer-text">Already have an account? <a href="#" id="switch-to-login">Log in</a></p>
+    </div>
+  </div>
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="data.js"></script>
+<script src="auth.js"></script>
+<script src="app.js"></script>
+<script>
+  // Pre-select tab from URL
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('tab') === 'register') switchToRegister();
+  if (params.get('type') === 'realtor') {
+    document.getElementById('type-realtor').click();
+  }
+
+  // Redirect if already logged in
+  if (getCurrentUser()) {
+    window.location.href = params.get('next') || 'dashboard.html';
+  }
+
+  // Tab switching
+  function switchToLogin() {
+    document.getElementById('panel-login').classList.remove('hidden');
+    document.getElementById('panel-register').classList.add('hidden');
+    document.getElementById('tab-login').classList.add('active');
+    document.getElementById('tab-register').classList.remove('active');
+  }
+  function switchToRegister() {
+    document.getElementById('panel-register').classList.remove('hidden');
+    document.getElementById('panel-login').classList.add('hidden');
+    document.getElementById('tab-register').classList.add('active');
+    document.getElementById('tab-login').classList.remove('active');
+  }
+  document.getElementById('tab-login').addEventListener('click', switchToLogin);
+  document.getElementById('tab-register').addEventListener('click', switchToRegister);
+  document.getElementById('switch-to-register').addEventListener('click', e => { e.preventDefault(); switchToRegister(); });
+  document.getElementById('switch-to-login').addEventListener('click', e => { e.preventDefault(); switchToLogin(); });
+
+  // Account type toggle
+  let selectedType = 'student';
+  document.getElementById('type-student').addEventListener('click', () => {
+    selectedType = 'student';
+    document.getElementById('r-type').value = 'student';
+    document.getElementById('type-student').classList.add('selected');
+    document.getElementById('type-realtor').classList.remove('selected');
+    document.getElementById('student-fields').classList.remove('hidden');
+    document.getElementById('realtor-fields').classList.add('hidden');
+  });
+  document.getElementById('type-realtor').addEventListener('click', () => {
+    selectedType = 'realtor';
+    document.getElementById('r-type').value = 'realtor';
+    document.getElementById('type-realtor').classList.add('selected');
+    document.getElementById('type-student').classList.remove('selected');
+    document.getElementById('realtor-fields').classList.remove('hidden');
+    document.getElementById('student-fields').classList.add('hidden');
+  });
+
+  // Login form
+  document.getElementById('login-form').addEventListener('submit', e => {
+    e.preventDefault();
+    const email = document.getElementById('l-email').value;
+    const pass  = document.getElementById('l-password').value;
+    const result = login(email, pass);
+    if (result.ok) {
+      showToast('Welcome back, ' + result.user.name + '! 👋');
+      setTimeout(() => { window.location.href = params.get('next') || 'dashboard.html'; }, 600);
+    } else {
+      const errEl = document.getElementById('login-error');
+      errEl.classList.remove('hidden');
+      document.getElementById('login-error-msg').textContent = result.error;
+    }
+  });
+
+  // Register form
+  document.getElementById('reg-form').addEventListener('submit', e => {
+    e.preventDefault();
+    const fname = document.getElementById('r-fname').value.trim();
+    const lname = document.getElementById('r-lname').value.trim();
+    const email  = document.getElementById('r-email').value.trim();
+    const phone  = document.getElementById('r-phone').value.trim();
+    const campus = document.getElementById('r-campus').value;
+    const pass   = document.getElementById('r-password').value;
+    const confirm= document.getElementById('r-confirm').value;
+    const terms  = document.getElementById('r-terms').checked;
+    const type   = document.getElementById('r-type').value;
+
+    if (!fname || !lname) return showError('reg', 'Please enter your full name.');
+    if (!email)  return showError('reg', 'Please enter your email.');
+    if (!campus) return showError('reg', 'Please select your campus.');
+    if (pass.length < 6) return showError('reg', 'Password must be at least 6 characters.');
+    if (pass !== confirm) return showError('reg', 'Passwords do not match.');
+    if (!terms) return showError('reg', 'Please accept the Terms of Service.');
+
+    const data = {
+      name: fname + ' ' + lname,
+      email, phone, campus, password: pass, type,
+      major:      document.getElementById('r-major')?.value || '',
+      year:       document.getElementById('r-year')?.value  || '',
+      agency:     document.getElementById('r-agency')?.value || '',
+      licenseNum: document.getElementById('r-license')?.value || '',
+    };
+    const result = register(data);
+    if (result.ok) {
+      showToast('Account created! Welcome to LeaseLoop 🎉');
+      setTimeout(() => { window.location.href = params.get('next') || 'dashboard.html'; }, 700);
+    } else {
+      showError('reg', result.error);
+    }
+  });
+
+  function showError(prefix, msg) {
+    const el = document.getElementById(prefix + '-error');
+    el.classList.remove('hidden');
+    document.getElementById(prefix + '-error-msg').textContent = msg;
+  }
+
+  // Demo accounts
+  document.getElementById('demo-student').addEventListener('click', () => {
+    // Create or login demo student
+    const result = register({ name: 'Demo Student', email: 'student@demo.com', password: 'demo123', type: 'student', campus: 'UT Austin', major: 'Computer Science', year: 'Junior' });
+    if (!result.ok) login('student@demo.com', 'demo123');
+    showToast('Logged in as Demo Student 🎓');
+    setTimeout(() => window.location.href = 'dashboard.html', 600);
+  });
+  document.getElementById('demo-realtor').addEventListener('click', () => {
+    const result = register({ name: 'Demo Realtor', email: 'realtor@demo.com', password: 'demo123', type: 'realtor', campus: 'UT Austin', agency: 'Demo Realty LLC' });
+    if (!result.ok) login('realtor@demo.com', 'demo123');
+    showToast('Logged in as Demo Realtor 🏡');
+    setTimeout(() => window.location.href = 'dashboard.html', 600);
+  });
+</script>
+</body>
+</html>

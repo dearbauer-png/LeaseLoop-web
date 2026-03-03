@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Property Details — LeaseLoop</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<nav class="navbar" role="navigation">
+  <div class="navbar-inner">
+    <a href="index.html" class="navbar-brand">🔄 LeaseLoop</a>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="navbar-links" id="navbar-links" role="list">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="listings.html" class="active-nav">Browse Listings</a></li>
+      <li><a href="roommates.html">Find Roommates</a></li>
+      <li><a href="dashboard.html">Dashboard</a></li>
+    </ul>
+    <div class="navbar-right" id="navbar-right"></div>
+    <button class="campus-chip" id="campus-chip" aria-label="Switch campus">🎓 Campus ▼</button>
+  </div>
+</nav>
+
+<!-- Content injected by JS -->
+<div id="detail-root"></div>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div><div class="footer-brand">🔄 LeaseLoop</div><p class="footer-tagline">Student housing, simplified.</p></div>
+      <div class="footer-col"><h4>Browse</h4><ul>
+        <li><a href="listings.html">All Listings</a></li>
+        <li><a href="listings.html?type=Sublease">Subleases</a></li>
+      </ul></div>
+      <div class="footer-col"><h4>Tools</h4><ul>
+        <li><a href="roommates.html">Roommate Finder</a></li>
+        <li><a href="dashboard.html">Dashboard</a></li>
+      </ul></div>
+      <div class="footer-col"><h4>Company</h4><ul>
+        <li><a href="#">About</a></li><li><a href="#">Contact</a></li>
+      </ul></div>
+    </div>
+    <div class="footer-bottom"><span>© 2025 LeaseLoop</span><span>Made for college students 🎓</span></div>
+  </div>
+</footer>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="data.js"></script>
+<script src="auth.js"></script>
+<script src="app.js"></script>
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const id     = parseInt(params.get('id'));
+  const all    = getAllListings();
+  const listing = all.find(l => l.id === id);
+  const root   = document.getElementById('detail-root');
+
+  if (!listing) {
+    root.innerHTML = `<div class="container" style="padding:80px 24px;text-align:center;">
+      <div class="empty-state-icon">🏠</div>
+      <h2 style="margin-bottom:12px;">Listing Not Found</h2>
+      <p style="color:var(--gray-500);margin-bottom:24px;">This listing may have been removed or the link is incorrect.</p>
+      <a href="listings.html" class="btn btn-primary">Browse All Listings</a>
+    </div>`;
+  } else {
+    document.title = listing.title + ' — LeaseLoop';
+    const saved = isSaved(listing.id);
+
+    root.innerHTML = `
+      <!-- Hero image -->
+      <div class="detail-hero">
+        <span class="detail-hero-icon">${listing.icon || '🏠'}</span>
+        <span class="detail-hero-badge">${listing.type}</span>
+        <button class="detail-hero-save ${saved ? 'saved' : ''}" id="detail-save-btn" aria-label="${saved ? 'Unsave' : 'Save'} listing">
+          ${saved ? '♥' : '♡'}
+        </button>
+      </div>
+
+      <div class="detail-layout">
+        <!-- Main -->
+        <div class="detail-main">
+          <a href="listings.html" class="detail-back">← Back to Listings</a>
+          <h1 class="detail-title">${listing.title}</h1>
+          <p class="detail-price">$${listing.price.toLocaleString()}<span class="detail-price-unit">/${listing.priceUnit}</span></p>
+          <p class="detail-location">📍 ${listing.location} · ${listing.city}</p>
+          <div class="detail-rating">${renderStars(listing.rating)} <span style="color:var(--gray-500);font-size:14px;">(${listing.reviews} reviews)</span>
+            ${listing.featured ? '<span style="background:var(--orange-500);color:white;font-size:11px;font-weight:700;padding:3px 10px;border-radius:100px;letter-spacing:.4px;">⭐ FEATURED</span>' : ''}
+          </div>
+
+          <!-- Specs -->
+          <div class="detail-specs">
+            <div class="spec-card"><div class="spec-icon">🛏</div><div class="spec-val">${listing.bedrooms === 0 ? 'Studio' : listing.bedrooms}</div><div class="spec-label">Bedrooms</div></div>
+            <div class="spec-card"><div class="spec-icon">🚿</div><div class="spec-val">${listing.bathrooms}</div><div class="spec-label">Bathrooms</div></div>
+            <div class="spec-card"><div class="spec-icon">📐</div><div class="spec-val">${listing.sqft ? listing.sqft.toLocaleString() : '—'}</div><div class="spec-label">Sq Ft</div></div>
+            <div class="spec-card"><div class="spec-icon">📅</div><div class="spec-val" style="font-size:13px;">${listing.available || '—'}</div><div class="spec-label">Available</div></div>
+          </div>
+
+          <!-- Description -->
+          <div class="detail-section">
+            <h3>About This Property</h3>
+            <p>${listing.description}</p>
+          </div>
+
+          <!-- Amenities -->
+          ${listing.amenities && listing.amenities.length ? `
+          <div class="detail-section">
+            <h3>Amenities</h3>
+            <ul class="amenities-list" role="list">
+              ${listing.amenities.map(a => `<li class="amenity-tag" role="listitem">✓ ${a}</li>`).join('')}
+            </ul>
+          </div>` : ''}
+
+          <!-- Policies -->
+          <div class="detail-section">
+            <h3>Policies</h3>
+            <div class="policy-grid">
+              <div class="policy-item"><span class="pi-icon">📋</span><div><div class="pi-label">Lease</div><div class="pi-val">${listing.leaseLength || '12 months'}</div></div></div>
+              <div class="policy-item"><span class="pi-icon">🐾</span><div><div class="pi-label">Pets</div><div class="pi-val">${listing.petPolicy || 'Ask landlord'}</div></div></div>
+              <div class="policy-item"><span class="pi-icon">��</span><div><div class="pi-label">Parking</div><div class="pi-val">${listing.parking || 'Ask landlord'}</div></div></div>
+              <div class="policy-item"><span class="pi-icon">💡</span><div><div class="pi-label">Utilities</div><div class="pi-val">${listing.utilities && listing.utilities.length ? listing.utilities.join(', ') : 'Not included'}</div></div></div>
+            </div>
+          </div>
+
+          <!-- Map placeholder -->
+          <div class="detail-section">
+            <h3>Location</h3>
+            <div style="background:var(--gray-100);border:1px solid var(--gray-200);border-radius:var(--radius-lg);height:200px;display:flex;align-items:center;justify-content:center;color:var(--gray-400);font-size:15px;gap:10px;">
+              🗺️ Interactive map coming soon — <strong>${listing.location}</strong>
+            </div>
+          </div>
+
+          <!-- Similar listings -->
+          <div class="detail-section">
+            <h3>Similar Listings Nearby</h3>
+            <div class="listings-grid" id="similar-grid"></div>
+          </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="detail-sidebar">
+          <div class="contact-card">
+            <h3>Contact Landlord</h3>
+            <div class="contact-landlord">
+              <div class="contact-avatar">${listing.landlord.charAt(0)}</div>
+              <div>
+                <div class="contact-name">${listing.landlord}</div>
+                <div class="contact-role">${listing.landlordType || 'Landlord'}${listing.agency ? ' · ' + listing.agency : ''}</div>
+              </div>
+            </div>
+            <p class="contact-available">✅ Available ${listing.available || 'soon'}</p>
+            <div class="contact-actions">
+              <button class="btn btn-primary" id="btn-contact">💬 Send Message</button>
+              <button class="btn btn-green"   id="btn-tour">🗓 Schedule Tour</button>
+              <a class="btn btn-outline" href="tel:${listing.landlordPhone}">📞 ${listing.landlordPhone}</a>
+              <a class="btn btn-ghost"   href="mailto:${listing.landlordEmail}">📧 Email</a>
+            </div>
+            <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--gray-200);display:flex;justify-content:space-between;font-size:13px;color:var(--gray-500);">
+              <span>👁 ${listing.views || 0} views</span>
+              <span>💬 ${listing.inquiries || 0} inquiries</span>
+              <span>${renderStars(listing.rating)}</span>
+            </div>
+          </div>
+
+          <!-- Share / Report -->
+          <div style="margin-top:16px;display:flex;gap:10px;">
+            <button class="btn btn-ghost btn-sm" style="flex:1;border:1px solid var(--gray-200);" id="btn-share">🔗 Share</button>
+            <button class="btn btn-ghost btn-sm" style="flex:1;border:1px solid var(--gray-200);" id="btn-report">⚠️ Report</button>
+          </div>
+        </div>
+      </div>`;
+
+    // Save button
+    document.getElementById('detail-save-btn').addEventListener('click', () => {
+      const user = getCurrentUser();
+      if (!user) { showToast('Please sign in to save listings'); window.location.href = 'auth.html'; return; }
+      const now = toggleSave(listing.id);
+      const btn = document.getElementById('detail-save-btn');
+      btn.textContent = now ? '♥' : '♡';
+      btn.classList.toggle('saved', now);
+      showToast(now ? '❤️ Saved to your dashboard!' : 'Removed from saved');
+    });
+
+    // Contact / Tour
+    document.getElementById('btn-contact').addEventListener('click', () => openContactModal(listing));
+    document.getElementById('btn-tour').addEventListener('click', () => openTourModal(listing));
+
+    // Share
+    document.getElementById('btn-share').addEventListener('click', () => {
+      if (navigator.share) {
+        navigator.share({ title: listing.title, url: window.location.href });
+      } else {
+        navigator.clipboard.writeText(window.location.href).then(() => showToast('�� Link copied to clipboard!'));
+      }
+    });
+
+    // Report
+    document.getElementById('btn-report').addEventListener('click', () => showToast('Thank you — our team will review this listing.'));
+
+    // Similar listings
+    const similar = all.filter(l => l.id !== listing.id && (l.campus === listing.campus || l.type === listing.type))
+      .slice(0, 3);
+    const simGrid = document.getElementById('similar-grid');
+    if (similar.length) {
+      simGrid.style.gridTemplateColumns = 'repeat(auto-fill,minmax(260px,1fr))';
+      similar.forEach(l => simGrid.appendChild(buildCard(l, 'details.html')));
+    } else {
+      simGrid.innerHTML = '<p style="color:var(--gray-500);">No similar listings found.</p>';
+    }
+  }
+</script>
+</body>
+</html>

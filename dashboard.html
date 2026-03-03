@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — LeaseLoop</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<nav class="navbar" role="navigation">
+  <div class="navbar-inner">
+    <a href="index.html" class="navbar-brand">🔄 LeaseLoop</a>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="navbar-links" id="navbar-links" role="list">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="listings.html">Browse Listings</a></li>
+      <li><a href="roommates.html">Find Roommates</a></li>
+      <li><a href="dashboard.html" class="active-nav">Dashboard</a></li>
+    </ul>
+    <div class="navbar-right" id="navbar-right"></div>
+    <button class="campus-chip" id="campus-chip" aria-label="Switch campus">🎓 Campus ▼</button>
+  </div>
+</nav>
+
+<div class="page-band">
+  <div class="container">
+    <div>
+      <h1 id="dash-greeting">My Dashboard</h1>
+      <p id="dash-sub">Manage your listings, saved properties, and profile</p>
+    </div>
+  </div>
+</div>
+
+<!-- Not logged in state -->
+<div id="not-logged-in" class="hidden">
+  <div class="container" style="padding:80px 24px;text-align:center;">
+    <div class="empty-state-icon">🔐</div>
+    <h3 style="font-size:24px;font-weight:800;margin-bottom:10px;">Sign In to Access Your Dashboard</h3>
+    <p style="color:var(--gray-500);margin-bottom:28px;font-size:16px;">Create a free account to save listings, post properties, and find roommates.</p>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+      <a href="auth.html" class="btn btn-outline btn-lg">Log In</a>
+      <a href="auth.html?tab=register" class="btn btn-primary btn-lg">Sign Up Free</a>
+    </div>
+  </div>
+</div>
+
+<!-- Logged in dashboard -->
+<div id="dash-content" class="hidden">
+  <div class="dashboard-layout">
+
+    <!-- Sidebar -->
+    <aside class="dashboard-sidebar" aria-label="Dashboard navigation">
+      <div class="dash-profile">
+        <div class="dash-avatar" id="dash-avatar">?</div>
+        <div class="dash-name" id="dash-name">Loading…</div>
+        <div class="dash-role-badge" id="dash-role">Student</div>
+      </div>
+      <nav aria-label="Dashboard sections">
+        <ul class="dash-nav">
+          <li><a href="#" class="active" data-section="overview"  ><span class="nav-icon">📊</span> Overview</a></li>
+          <li><a href="#" data-section="listings"  id="dash-nav-listings"><span class="nav-icon">🏠</span> <span id="dash-listings-label">My Listings</span></a></li>
+          <li><a href="#" data-section="saved"     ><span class="nav-icon">❤️</span> Saved Listings</a></li>
+          <li><a href="#" data-section="roommates" ><span class="nav-icon">🤝</span> Roommate Matches</a></li>
+          <li><a href="#" data-section="profile"   ><span class="nav-icon">👤</span> Profile Settings</a></li>
+          <li><a href="#" id="dash-logout"          ><span class="nav-icon">🚪</span> Log Out</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Main panels -->
+    <main aria-label="Dashboard content">
+
+      <!-- Overview -->
+      <section class="dash-section active" id="section-overview">
+        <h2 class="dash-section-title" id="overview-title">Good morning! 👋</h2>
+        <p class="dash-section-sub" id="overview-sub">Here's your LeaseLoop summary</p>
+        <div class="stats-grid" id="stats-grid"></div>
+        <div id="overview-alerts"></div>
+
+        <!-- Realtor quick actions -->
+        <div id="realtor-quick" class="hidden" style="margin-bottom:28px;">
+          <h3 style="font-size:16px;font-weight:700;color:var(--gray-700);margin-bottom:12px;">Quick Actions</h3>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;">
+            <a href="listings.html?action=post" class="btn btn-green">+ List a Property</a>
+            <button class="btn btn-outline" data-section="listings">Manage My Listings</button>
+            <a href="listings.html" class="btn btn-ghost" style="border:1px solid var(--gray-200);">Browse Market</a>
+          </div>
+        </div>
+
+        <!-- Student quick actions -->
+        <div id="student-quick" class="hidden" style="margin-bottom:28px;">
+          <h3 style="font-size:16px;font-weight:700;color:var(--gray-700);margin-bottom:12px;">Quick Actions</h3>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;">
+            <a href="listings.html" class="btn btn-primary">🔍 Browse Listings</a>
+            <a href="roommates.html" class="btn btn-outline">🤝 Find Roommates</a>
+            <button class="btn btn-ghost" style="border:1px solid var(--gray-200);" data-section="saved">❤️ Saved Listings</button>
+          </div>
+        </div>
+
+        <!-- Recent saved (student) -->
+        <div id="recent-saved-wrap" class="hidden">
+          <h3 style="font-size:16px;font-weight:700;color:var(--gray-700);margin-bottom:12px;">Recently Saved</h3>
+          <div class="listings-grid" id="recent-saved-grid" style="grid-template-columns:repeat(auto-fill,minmax(260px,1fr));"></div>
+        </div>
+
+        <!-- Realtor recent listings -->
+        <div id="recent-listings-wrap" class="hidden">
+          <h3 style="font-size:16px;font-weight:700;color:var(--gray-700);margin-bottom:12px;">My Recent Listings</h3>
+          <div id="recent-listings-preview"></div>
+        </div>
+      </section>
+
+      <!-- My Listings (Realtor) -->
+      <section class="dash-section" id="section-listings">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:6px;">
+          <div>
+            <h2 class="dash-section-title" id="listings-section-title">My Listings</h2>
+            <p class="dash-section-sub">Manage your property listings</p>
+          </div>
+          <a href="listings.html?action=post" class="btn btn-green" id="btn-add-listing">+ Add New Listing</a>
+        </div>
+        <div id="my-listings-content"></div>
+      </section>
+
+      <!-- Saved Listings (Student) -->
+      <section class="dash-section" id="section-saved">
+        <h2 class="dash-section-title">Saved Listings</h2>
+        <p class="dash-section-sub">Properties you've saved for later</p>
+        <div class="listings-grid" id="saved-listings-grid" aria-label="Saved listings"></div>
+        <div class="empty-state hidden" id="saved-empty">
+          <div class="empty-state-icon">💔</div>
+          <h3>No saved listings yet</h3>
+          <p>Browse listings and tap ♡ to save your favorites.</p>
+          <a href="listings.html" class="btn btn-primary">Browse Listings</a>
+        </div>
+      </section>
+
+      <!-- Roommate Matches -->
+      <section class="dash-section" id="section-roommates">
+        <h2 class="dash-section-title">Roommate Matches 💝</h2>
+        <p class="dash-section-sub">People you matched with in the roommate finder</p>
+        <div id="roommate-matches-content"></div>
+      </section>
+
+      <!-- Profile Settings -->
+      <section class="dash-section" id="section-profile">
+        <h2 class="dash-section-title">Profile Settings</h2>
+        <p class="dash-section-sub">Update your account information</p>
+        <div style="max-width:560px;">
+          <form id="profile-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="pf-name">Full Name</label>
+                <input type="text" id="pf-name" required>
+              </div>
+              <div class="form-group">
+                <label for="pf-phone">Phone</label>
+                <input type="tel" id="pf-phone">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="pf-email">Email</label>
+              <input type="email" id="pf-email" required>
+            </div>
+            <div class="form-group">
+              <label for="pf-campus">Campus</label>
+              <select id="pf-campus">
+                <option>UT Austin</option><option>Baylor</option><option>Texas A&amp;M</option>
+                <option>TCU</option><option>SMU</option><option>UNT</option>
+                <option>Texas Tech</option><option>University of Houston</option>
+              </select>
+            </div>
+            <div id="pf-student-fields">
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="pf-major">Major</label>
+                  <input type="text" id="pf-major">
+                </div>
+                <div class="form-group">
+                  <label for="pf-year">Year</label>
+                  <select id="pf-year">
+                    <option>Freshman</option><option>Sophomore</option><option>Junior</option>
+                    <option>Senior</option><option>Graduate</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div id="pf-realtor-fields" class="hidden">
+              <div class="form-group">
+                <label for="pf-agency">Agency</label>
+                <input type="text" id="pf-agency">
+              </div>
+              <div class="form-group">
+                <label for="pf-license">License #</label>
+                <input type="text" id="pf-license">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="pf-bio">Bio</label>
+              <textarea id="pf-bio" rows="3" placeholder="Tell others about yourself…"></textarea>
+            </div>
+            <div class="form-section-title">Change Password</div>
+            <div class="form-group">
+              <label for="pf-newpass">New Password</label>
+              <input type="password" id="pf-newpass" placeholder="Leave blank to keep current">
+            </div>
+            <div class="form-group">
+              <label for="pf-confirmpass">Confirm New Password</label>
+              <input type="password" id="pf-confirmpass" placeholder="Re-enter new password">
+            </div>
+            <button type="submit" class="btn btn-primary btn-lg" style="margin-top:8px;">Save Changes</button>
+          </form>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="data.js"></script>
+<script src="auth.js"></script>
+<script src="app.js"></script>
+<script>
+  const user = getCurrentUser();
+  if (!user) {
+    document.getElementById('not-logged-in').classList.remove('hidden');
+  } else {
+    document.getElementById('dash-content').classList.remove('hidden');
+    initDashboard();
+  }
+
+  function initDashboard() {
+    // Set greeting
+    const hour = new Date().getHours();
+    const greet = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+    document.getElementById('dash-greeting').textContent = greet + ', ' + user.name.split(' ')[0] + '! 👋';
+    document.getElementById('dash-sub').textContent = user.type === 'realtor'
+      ? 'Manage your listings, inquiries, and account settings'
+      : 'Manage your saved listings, roommate matches, and profile';
+    document.getElementById('dash-avatar').textContent = user.name.charAt(0).toUpperCase();
+    document.getElementById('dash-name').textContent   = user.name;
+    document.getElementById('dash-role').textContent   = user.type === 'realtor'
+      ? '🏡 Realtor' + (user.agency ? ' · ' + user.agency : '')
+      : '🎓 Student' + (user.campus ? ' · ' + user.campus : '');
+
+    // Type-specific labels
+    if (user.type === 'realtor') {
+      document.getElementById('dash-listings-label').textContent = 'My Listings';
+      document.getElementById('listings-section-title').textContent = 'My Listings';
+      document.getElementById('realtor-quick').classList.remove('hidden');
+      document.getElementById('recent-listings-wrap').classList.remove('hidden');
+    } else {
+      document.getElementById('dash-listings-label').textContent = 'Browse Listings';
+      document.getElementById('student-quick').classList.remove('hidden');
+      document.getElementById('recent-saved-wrap').classList.remove('hidden');
+    }
+
+    renderStats();
+    renderSavedListings();
+    renderMyListings();
+    renderRoommateMatches();
+    populateProfileForm();
+
+    // Nav
+    document.querySelectorAll('[data-section]').forEach(el => {
+      el.addEventListener('click', e => {
+        e.preventDefault();
+        const sec = el.dataset.section;
+        showSection(sec);
+      });
+    });
+    document.getElementById('dash-logout').addEventListener('click', e => { e.preventDefault(); logout(); });
+    document.getElementById('profile-form').addEventListener('submit', saveProfile);
+  }
+
+  function showSection(name) {
+    document.querySelectorAll('.dash-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.dash-nav a').forEach(a => a.classList.remove('active'));
+    const sec = document.getElementById('section-' + name);
+    if (sec) sec.classList.add('active');
+    const link = document.querySelector(`.dash-nav a[data-section="${name}"]`);
+    if (link) link.classList.add('active');
+    if (name === 'saved') renderSavedListings();
+    if (name === 'listings') renderMyListings();
+    if (name === 'roommates') renderRoommateMatches();
+  }
+
+  function renderStats() {
+    const grid = document.getElementById('stats-grid');
+    const savedIds = getSavedIds();
+    const myL = getUserListings().filter(l => l.postedBy === user.id);
+    const matches = getMatches();
+    const stats = user.type === 'realtor'
+      ? [
+          { num: myL.length, label: 'Active Listings', cls: '' },
+          { num: myL.reduce((s,l)=>s+(l.views||0),0), label: 'Total Views', cls: 'green' },
+          { num: myL.reduce((s,l)=>s+(l.inquiries||0),0), label: 'Inquiries', cls: 'orange' },
+          { num: matches.length, label: 'Saved by Students', cls: 'purple' },
+        ]
+      : [
+          { num: savedIds.length, label: 'Saved Listings', cls: '' },
+          { num: matches.length, label: 'Roommate Matches', cls: 'green' },
+          { num: getAllListings().filter(l=>l.campus===user.campus).length, label: 'Near Your Campus', cls: 'orange' },
+          { num: getAllListings().length, label: 'Total Listings', cls: 'purple' },
+        ];
+    grid.innerHTML = stats.map(s => `
+      <div class="stat-card ${s.cls}">
+        <div class="stat-num">${s.num}</div>
+        <div class="stat-label">${s.label}</div>
+      </div>`).join('');
+
+    // Quick overview panels
+    if (user.type === 'student') {
+      const recent = savedIds.slice(0, 3).map(id => getAllListings().find(l=>l.id===id)).filter(Boolean);
+      const rg = document.getElementById('recent-saved-grid');
+      if (rg) { rg.innerHTML = ''; recent.forEach(l => rg.appendChild(buildCard(l,'details.html'))); }
+    } else {
+      const rlp = document.getElementById('recent-listings-preview');
+      if (rlp && myL.length) {
+        rlp.innerHTML = `<table class="manage-table"><thead><tr><th>Title</th><th>Price</th><th>Type</th><th>Status</th></tr></thead>
+          <tbody>${myL.slice(0,5).map(l=>`<tr>
+            <td><a href="details.html?id=${l.id}" style="color:var(--blue-600);font-weight:600;">${l.title}</a></td>
+            <td>$${l.price}/mo</td><td>${l.type}</td>
+            <td><span class="status-badge status-${l.status||'available'}">${l.status||'available'}</span></td>
+          </tr>`).join('')}</tbody></table>`;
+      } else if (rlp) {
+        rlp.innerHTML = '<p style="color:var(--gray-500);">No listings yet. <a href="listings.html?action=post" style="color:var(--blue-600);">Post your first listing →</a></p>';
+      }
+    }
+  }
+
+  function renderMyListings() {
+    const el = document.getElementById('my-listings-content');
+    if (!el) return;
+    if (user.type !== 'realtor') {
+      el.innerHTML = `<div class="alert alert-info"><span class="alert-icon">ℹ️</span>
+        This section is for realtors and landlords. <a href="auth.html?tab=register&type=realtor">Register as a realtor</a> to list properties.</div>`;
+      return;
+    }
+    const myL = getUserListings().filter(l => l.postedBy === user.id);
+    if (!myL.length) {
+      el.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🏠</div>
+        <h3>No Listings Yet</h3>
+        <p>Post your first property to start receiving inquiries from students.</p>
+        <a href="listings.html?action=post" class="btn btn-green btn-lg">+ Post a Listing</a></div>`;
+      return;
+    }
+    el.innerHTML = `<div class="manage-table-wrap">
+      <table class="manage-table">
+        <thead><tr><th>Property</th><th>Price</th><th>Campus</th><th>Views</th><th>Inquiries</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="manage-tbody"></tbody>
+      </table></div>`;
+    const tbody = document.getElementById('manage-tbody');
+    myL.forEach(l => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><a href="details.html?id=${l.id}" style="color:var(--blue-600);font-weight:700;">${l.title}</a><br>
+          <span style="font-size:12px;color:var(--gray-500);">${l.type} · ${l.bedrooms===0?'Studio':l.bedrooms+'BR'}</span></td>
+        <td style="font-weight:700;color:var(--blue-600);">$${l.price}/mo</td>
+        <td>${l.campus}</td>
+        <td>${l.views||0}</td>
+        <td>${l.inquiries||0}</td>
+        <td>
+          <select class="status-select" data-id="${l.id}" style="padding:4px 8px;border:1px solid var(--gray-200);border-radius:4px;font-size:13px;">
+            <option value="available" ${l.status==='available'?'selected':''}>Available</option>
+            <option value="pending"   ${l.status==='pending'  ?'selected':''}>Pending</option>
+            <option value="leased"    ${l.status==='leased'   ?'selected':''}>Leased</option>
+          </select>
+        </td>
+        <td class="table-actions">
+          <a href="details.html?id=${l.id}" class="btn btn-ghost btn-sm" style="border:1px solid var(--gray-200);">👁 View</a>
+          <button class="btn btn-danger btn-sm delete-btn" data-id="${l.id}">🗑</button>
+        </td>`;
+      tbody.appendChild(tr);
+    });
+    tbody.querySelectorAll('.delete-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (confirm('Delete this listing?')) {
+          deleteUserListing(parseInt(btn.dataset.id));
+          renderMyListings();
+          renderStats();
+          showToast('Listing deleted');
+        }
+      });
+    });
+    tbody.querySelectorAll('.status-select').forEach(sel => {
+      sel.addEventListener('change', () => {
+        updateUserListing(parseInt(sel.dataset.id), { status: sel.value });
+        showToast('Status updated');
+        // Re-colour badge
+        const badge = sel.closest('td').querySelector('.status-badge');
+        if (badge) { badge.className = 'status-badge status-' + sel.value; badge.textContent = sel.value; }
+      });
+    });
+  }
+
+  function renderSavedListings() {
+    const grid  = document.getElementById('saved-listings-grid');
+    const empty = document.getElementById('saved-empty');
+    if (!grid) return;
+    const ids    = getSavedIds();
+    const saved  = ids.map(id => getAllListings().find(l => l.id === id)).filter(Boolean);
+    grid.innerHTML = '';
+    if (!saved.length) { grid.classList.add('hidden'); empty.classList.remove('hidden'); return; }
+    grid.classList.remove('hidden'); empty.classList.add('hidden');
+    saved.forEach(l => grid.appendChild(buildCard(l, 'details.html')));
+  }
+
+  function renderRoommateMatches() {
+    const el = document.getElementById('roommate-matches-content');
+    if (!el) return;
+    const matches = getMatches();
+    if (!matches.length) {
+      el.innerHTML = `<div class="empty-state"><div class="empty-state-icon">💝</div>
+        <h3>No Matches Yet</h3>
+        <p>Head to the Roommate Finder to start swiping!</p>
+        <a href="roommates.html" class="btn btn-primary">Find Roommates</a></div>`;
+      return;
+    }
+    el.innerHTML = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;">' +
+      matches.map(p => `
+        <div style="background:white;border:1px solid var(--gray-200);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);">
+          <div style="background:linear-gradient(135deg,#7c3aed,var(--blue-600));padding:20px;text-align:center;color:white;">
+            <div style="width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,.2);border:2px solid rgba(255,255,255,.5);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;margin:0 auto 10px;">${p.initials}</div>
+            <div style="font-weight:700;font-size:17px;">${p.name}, ${p.age}</div>
+            <div style="opacity:.8;font-size:13px;">${p.campus}</div>
+          </div>
+          <div style="padding:16px;">
+            <p style="font-size:14px;color:var(--gray-700);margin-bottom:10px;">${p.major} · ${p.year}</p>
+            <p style="font-size:13px;color:var(--gray-500);margin-bottom:12px;">Budget: $${p.budget.min}–$${p.budget.max}/mo</p>
+            <p style="font-size:13px;color:var(--gray-500);margin-bottom:14px;font-style:italic;">"${p.bio.substring(0,80)}…"</p>
+            <div style="display:flex;gap:8px;">
+              <button class="btn btn-primary btn-sm" style="flex:1;" onclick="showToast('💬 Message sent to ${p.name}!')">💬 Message</button>
+              <a href="roommates.html" class="btn btn-ghost btn-sm" style="border:1px solid var(--gray-200);">Profile</a>
+            </div>
+          </div>
+        </div>`).join('') + '</div>';
+  }
+
+  function populateProfileForm() {
+    document.getElementById('pf-name').value   = user.name || '';
+    document.getElementById('pf-email').value  = user.email || '';
+    document.getElementById('pf-phone').value  = user.phone || '';
+    document.getElementById('pf-campus').value = user.campus || 'UT Austin';
+    document.getElementById('pf-bio').value    = user.bio || '';
+    if (user.type === 'student') {
+      document.getElementById('pf-major').value = user.major || '';
+      document.getElementById('pf-year').value  = user.year  || '';
+    } else {
+      document.getElementById('pf-student-fields').classList.add('hidden');
+      document.getElementById('pf-realtor-fields').classList.remove('hidden');
+      document.getElementById('pf-agency').value  = user.agency     || '';
+      document.getElementById('pf-license').value = user.licenseNum || '';
+    }
+  }
+
+  function saveProfile(e) {
+    e.preventDefault();
+    const np = document.getElementById('pf-newpass').value;
+    const cp = document.getElementById('pf-confirmpass').value;
+    if (np && np !== cp) { showToast('⚠️ Passwords do not match'); return; }
+    const updates = {
+      name:   document.getElementById('pf-name').value.trim(),
+      email:  document.getElementById('pf-email').value.trim(),
+      phone:  document.getElementById('pf-phone').value.trim(),
+      campus: document.getElementById('pf-campus').value,
+      bio:    document.getElementById('pf-bio').value.trim(),
+    };
+    if (user.type === 'student') {
+      updates.major = document.getElementById('pf-major').value;
+      updates.year  = document.getElementById('pf-year').value;
+    } else {
+      updates.agency     = document.getElementById('pf-agency').value;
+      updates.licenseNum = document.getElementById('pf-license').value;
+    }
+    if (np) updates.password = np;
+    updateProfile(updates);
+    setCurrentCampus(updates.campus);
+    showToast('✅ Profile updated!');
+    document.getElementById('dash-name').textContent = updates.name;
+    document.getElementById('dash-avatar').textContent = updates.name.charAt(0).toUpperCase();
+  }
+
+  window.onCampusChange = () => { renderStats(); };
+</script>
+</body>
+</html>
