@@ -91,6 +91,9 @@
 <script src="auth.js"></script>
 <script src="app.js"></script>
 <script>
+  let activeOtherId = null;
+  let activeOtherName = null;
+
   const user = getCurrentUser();
   if (!user) {
     document.getElementById('msg-not-auth').classList.remove('hidden');
@@ -98,9 +101,6 @@
     document.getElementById('msg-ui').classList.remove('hidden');
     initMessagesPage();
   }
-
-  let activeOtherId = null;
-  let activeOtherName = null;
 
   function initMessagesPage() {
     renderConvList();
