@@ -11,7 +11,13 @@
 
 <nav class="navbar" role="navigation" aria-label="Main navigation">
   <div class="navbar-inner">
-    <a href="index.html" class="navbar-brand">🐸♾️ LeaseLoops</a>
+    <a href="index.html" class="navbar-brand">
+      <svg class="brand-logo-svg" width="26" height="17" viewBox="0 0 28 18" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="9" cy="9" r="7.5" stroke="currentColor" stroke-width="2.2"/>
+        <circle cx="19" cy="9" r="7.5" stroke="currentColor" stroke-width="2.2"/>
+      </svg>
+      <span class="brand-text">LeaseLoops</span>
+    </a>
     <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
       <span></span><span></span><span></span>
     </button>
@@ -19,7 +25,7 @@
       <li><a href="index.html" class="active-nav">Home</a></li>
       <li><a href="listings.html">Browse Listings</a></li>
       <li><a href="roommates.html">Find Roommates</a></li>
-      <li><a href="messages.html">💬 Messages</a></li>
+      <li><a href="messages.html">Messages</a></li>
       <li><a href="dashboard.html">Dashboard</a></li>
     </ul>
     <div class="navbar-right" id="navbar-right"><!-- auth injected by JS --></div>
@@ -31,18 +37,23 @@
 <section class="hero" aria-labelledby="hero-heading">
   <div class="hero-inner">
     <div class="hero-logo-block">
-      <span class="hero-logo-icon">🐸♾️</span>
+      <div class="hero-logo-icon">
+        <svg class="hero-logo-svg" width="60" height="39" viewBox="0 0 56 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <circle cx="18" cy="18" r="15" stroke="currentColor" stroke-width="3.5"/>
+          <circle cx="38" cy="18" r="15" stroke="currentColor" stroke-width="3.5"/>
+        </svg>
+      </div>
       <div class="hero-logo-wordmark">LeaseLoops</div>
-      <div class="hero-logo-tagline">Connecting Student Homes</div>
+      <div class="hero-logo-tagline">Student Housing Marketplace</div>
     </div>
-    <h1 id="hero-heading">Find Your Home at <span id="hero-campus-name">TCU</span> 🏡</h1>
-    <p class="hero-sub">Student housing near TCU — no broker fees, no hassle. By Horned Frogs, for Horned Frogs. 🐸</p>
+    <h1 id="hero-heading">Find Your Home at <span id="hero-campus-name">TCU</span></h1>
+    <p class="hero-sub">Student housing near TCU — verified listings, no broker fees. Find your perfect home near campus.</p>
 
     <!-- Segmented control -->
     <div class="segment-tabs" role="tablist" aria-label="Browse by type">
-      <button class="segment-tab active" data-tab="all" role="tab" aria-selected="true">🏠 All Listings</button>
-      <button class="segment-tab" data-tab="sublease" role="tab" aria-selected="false">🔑 Subleases</button>
-      <button class="segment-tab" data-tab="roommates" role="tab" aria-selected="false">👥 Roommates</button>
+      <button class="segment-tab active" data-tab="all" role="tab" aria-selected="true">All Listings</button>
+      <button class="segment-tab" data-tab="sublease" role="tab" aria-selected="false">Subleases</button>
+      <button class="segment-tab" data-tab="roommates" role="tab" aria-selected="false">Roommates</button>
     </div>
 
     <form class="search-box" id="hero-search-form" role="search" aria-label="Search listings">
@@ -64,12 +75,15 @@
         <option>Apartment</option><option>House</option><option>Studio</option>
         <option>Room</option><option>Sublease</option><option>Condo</option>
       </select>
-      <button type="submit" class="btn-search">🔍 Search</button>
+      <button type="submit" class="btn-search">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        Search
+      </button>
     </form>
 
     <div class="hero-stats" aria-label="Platform stats">
       <div class="hero-stat"><div class="hero-stat-num" id="stat-listings">200+</div><div class="hero-stat-label">Active Listings</div></div>
-      <div class="hero-stat"><div class="hero-stat-num">🐸 #1</div><div class="hero-stat-label">TCU Housing App</div></div>
+      <div class="hero-stat"><div class="hero-stat-num">#1</div><div class="hero-stat-label">TCU Housing App</div></div>
       <div class="hero-stat"><div class="hero-stat-num">$650</div><div class="hero-stat-label">Avg. Near TCU</div></div>
       <div class="hero-stat"><div class="hero-stat-num">4.8★</div><div class="hero-stat-label">Student Rating</div></div>
     </div>
@@ -80,7 +94,7 @@
 <section class="section" aria-labelledby="featured-heading">
   <div class="container">
     <div class="section-header">
-      <h2 id="featured-heading">🐸 Featured TCU Housing</h2>
+      <h2 id="featured-heading">Featured TCU Housing</h2>
       <p>Hand-picked places near TCU campus — perfect for Horned Frogs</p>
     </div>
     <div class="listings-grid" id="featured-grid" aria-label="Featured listings"></div>
@@ -94,29 +108,37 @@
 <section class="how-it-works section-alt" aria-labelledby="how-heading">
   <div class="section-header">
     <h2 id="how-heading">How LeaseLoops Works</h2>
-    <p>Finding student housing shouldn't stress you out 😌</p>
+    <p>Finding your next home is simple.</p>
   </div>
   <div class="steps-grid container" role="list">
     <div class="step-card" role="listitem">
-      <div class="step-icon-wrap">🐸</div>
+      <div class="step-icon-wrap">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      </div>
       <p class="step-num">Step 1</p>
       <h3>Pick Your Campus</h3>
       <p>Choose TCU (or any campus) and we'll show listings tailored to your area.</p>
     </div>
     <div class="step-card" role="listitem">
-      <div class="step-icon-wrap">🔍</div>
+      <div class="step-icon-wrap">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      </div>
       <p class="step-num">Step 2</p>
       <h3>Search &amp; Filter</h3>
       <p>Filter by price, bedrooms, and type to find your perfect spot near campus.</p>
     </div>
     <div class="step-card" role="listitem">
-      <div class="step-icon-wrap">❤️</div>
+      <div class="step-icon-wrap">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2v16z"/></svg>
+      </div>
       <p class="step-num">Step 3</p>
       <h3>Save Favorites</h3>
       <p>Save listings and roommate matches to compare in your dashboard.</p>
     </div>
     <div class="step-card" role="listitem">
-      <div class="step-icon-wrap">💬</div>
+      <div class="step-icon-wrap">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      </div>
       <p class="step-num">Step 4</p>
       <h3>Move In!</h3>
       <p>Message landlords, schedule tours, and sign your lease — all in one place.</p>
@@ -139,22 +161,26 @@
 <section class="section section-alt" aria-labelledby="rm-teaser-heading">
   <div class="container" style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;">
     <div>
-      <h2 id="rm-teaser-heading" style="font-size:28px;font-weight:800;margin-bottom:12px;color:var(--teal-600);">Find Your Perfect TCU Roommate 💑</h2>
-      <p style="font-size:16px;color:var(--gray-600);margin-bottom:24px;font-weight:500;">Our roommate finder works like a dating app — swipe through profiles, match with TCU students, and find your next roommate before the semester starts.</p>
+      <h2 id="rm-teaser-heading" style="font-size:28px;font-weight:800;margin-bottom:12px;color:var(--teal-600);">Find Your Perfect TCU Roommate</h2>
+      <p style="font-size:16px;color:var(--gray-600);margin-bottom:24px;font-weight:500;">Our roommate finder helps you connect with compatible TCU students — filter profiles, match with peers, and find your next roommate before the semester starts.</p>
       <ul style="list-style:none;display:flex;flex-direction:column;gap:12px;margin-bottom:28px;">
-        <li style="display:flex;align-items:center;gap:10px;font-size:15px;color:var(--gray-700);font-weight:600;"><span style="font-size:20px;">✅</span> Filter by campus, budget, sleep schedule</li>
-        <li style="display:flex;align-items:center;gap:10px;font-size:15px;color:var(--gray-700);font-weight:600;"><span style="font-size:20px;">✅</span> Match when both students like each other</li>
-        <li style="display:flex;align-items:center;gap:10px;font-size:15px;color:var(--gray-700);font-weight:600;"><span style="font-size:20px;">✅</span> Message matches to coordinate move-in</li>
+        <li style="display:flex;align-items:center;gap:10px;font-size:15px;color:var(--gray-700);font-weight:600;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--teal-600)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg> Filter by campus, budget, sleep schedule</li>
+        <li style="display:flex;align-items:center;gap:10px;font-size:15px;color:var(--gray-700);font-weight:600;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--teal-600)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg> Match when both students like each other</li>
+        <li style="display:flex;align-items:center;gap:10px;font-size:15px;color:var(--gray-700);font-weight:600;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--teal-600)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg> Message matches to coordinate move-in</li>
       </ul>
       <a href="roommates.html" class="btn btn-primary btn-lg">Try Roommate Finder →</a>
     </div>
-    <div style="text-align:center;font-size:100px;line-height:1;">🐸❤️🏠</div>
+    <div style="display:flex;align-items:center;justify-content:center;">
+      <div style="width:180px;height:180px;background:linear-gradient(135deg,var(--teal-50),var(--purple-50));border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid var(--gray-200);">
+        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="var(--teal-600)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+      </div>
+    </div>
   </div>
 </section>
 
 <!-- Realtor CTA -->
 <section class="cta-banner" aria-labelledby="cta-heading">
-  <h2 id="cta-heading">Got a Property Near TCU? 🏡</h2>
+  <h2 id="cta-heading">List Your Property Near TCU</h2>
   <p>List on LeaseLoops and connect with thousands of TCU students looking for housing every semester.</p>
   <div class="cta-btns">
     <a href="auth.html?tab=register&type=realtor" class="btn btn-white btn-lg">List My Property</a>
@@ -167,8 +193,14 @@
   <div class="footer-inner">
     <div class="footer-grid">
       <div>
-        <div class="footer-brand">🐸♾️ LeaseLoops</div>
-        <p class="footer-tagline">Connecting Student Homes — TCU's favorite housing marketplace.</p>
+        <div class="footer-brand">
+          <svg width="22" height="14" viewBox="0 0 28 18" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle cx="9" cy="9" r="7.5" stroke="currentColor" stroke-width="2.2"/>
+            <circle cx="19" cy="9" r="7.5" stroke="currentColor" stroke-width="2.2"/>
+          </svg>
+          LeaseLoops
+        </div>
+        <p class="footer-tagline">TCU's student housing marketplace — find your next home near campus.</p>
       </div>
       <div class="footer-col">
         <h4>Browse</h4>
@@ -200,7 +232,7 @@
     </div>
     <div class="footer-bottom">
       <span>© 2025 LeaseLoops. All rights reserved.</span>
-      <span>By Horned Frogs, for Horned Frogs 🐸</span>
+      <span>TCU's Student Housing Marketplace</span>
     </div>
   </div>
 </footer>
