@@ -9,7 +9,13 @@
 <body>
 <nav class="navbar" role="navigation" aria-label="Main navigation">
   <div class="navbar-inner">
-    <a href="index.html" class="navbar-brand">🐸♾️ LeaseLoops</a>
+    <a href="index.html" class="navbar-brand">
+      <svg class="brand-logo-svg" width="26" height="17" viewBox="0 0 28 18" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="9" cy="9" r="7.5" stroke="currentColor" stroke-width="2.2"/>
+        <circle cx="19" cy="9" r="7.5" stroke="currentColor" stroke-width="2.2"/>
+      </svg>
+      <span class="brand-text">LeaseLoops</span>
+    </a>
     <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
       <span></span><span></span><span></span>
     </button>
@@ -17,7 +23,7 @@
       <li><a href="index.html">Home</a></li>
       <li><a href="listings.html" class="active-nav">Browse Listings</a></li>
       <li><a href="roommates.html">Find Roommates</a></li>
-      <li><a href="messages.html">💬 Messages</a></li>
+      <li><a href="messages.html">Messages</a></li>
       <li><a href="dashboard.html">Dashboard</a></li>
     </ul>
     <div class="navbar-right" id="navbar-right"></div>
@@ -28,14 +34,14 @@
 <div class="page-band">
   <div class="container">
     <div>
-      <h1>🏠 Browse Student Housing</h1>
+      <h1>Browse Student Housing</h1>
       <p>Apartments, houses, studios &amp; subleases near your campus</p>
       <div class="page-segment-tabs" role="tablist" aria-label="Filter by category">
-        <button class="page-segment-tab active" data-type="" role="tab" aria-selected="true">🏠 All Listings</button>
-        <button class="page-segment-tab" data-type="Sublease" role="tab" aria-selected="false">🔑 Subleases</button>
-        <button class="page-segment-tab" data-type="Roommate" role="tab" aria-selected="false">👥 Roommates</button>
-        <button class="page-segment-tab" data-type="Apartment" role="tab" aria-selected="false">🏢 Apartments</button>
-        <button class="page-segment-tab" data-type="House" role="tab" aria-selected="false">🏡 Houses</button>
+        <button class="page-segment-tab active" data-type="" role="tab" aria-selected="true">All Listings</button>
+        <button class="page-segment-tab" data-type="Sublease" role="tab" aria-selected="false">Subleases</button>
+        <button class="page-segment-tab" data-type="Roommate" role="tab" aria-selected="false">Roommates</button>
+        <button class="page-segment-tab" data-type="Apartment" role="tab" aria-selected="false">Apartments</button>
+        <button class="page-segment-tab" data-type="House" role="tab" aria-selected="false">Houses</button>
       </div>
     </div>
     <a href="#" class="btn btn-primary" id="btn-post-listing">+ Post Listing</a>
@@ -46,7 +52,7 @@
   <div class="container">
     <!-- Filter Bar -->
     <div class="filters-bar" role="search" aria-label="Filter listings">
-      <div class="filters-title">🔍 Filter Listings</div>
+      <div class="filters-title">Filter Listings</div>
       <div class="filters-row">
         <div class="filter-group">
           <label for="f-q">Keyword</label>
@@ -315,7 +321,10 @@
   <div class="footer-inner">
     <div class="footer-grid">
       <div>
-        <div class="footer-brand">🐸♾️ LeaseLoops</div>
+        <div class="footer-brand">
+          <svg width="22" height="14" viewBox="0 0 28 18" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="9" cy="9" r="7.5" stroke="currentColor" stroke-width="2.2"/><circle cx="19" cy="9" r="7.5" stroke="currentColor" stroke-width="2.2"/></svg>
+          LeaseLoops
+        </div>
         <p class="footer-tagline">Student housing, simplified.</p>
       </div>
       <div class="footer-col"><h4>Browse</h4><ul>
@@ -332,7 +341,7 @@
         <li><a href="#">About</a></li><li><a href="#">Contact</a></li>
       </ul></div>
     </div>
-    <div class="footer-bottom"><span>© 2025 LeaseLoop</span><span>Made for college students 🎓</span></div>
+    <div class="footer-bottom"><span>© 2025 LeaseLoops. All rights reserved.</span><span>TCU's Student Housing Marketplace</span></div>
   </div>
 </footer>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
