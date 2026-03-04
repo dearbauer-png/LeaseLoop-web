@@ -780,22 +780,26 @@ input, select, textarea { font-family: inherit; }
 
   /* ── Body: base font + overflow prevention + bottom nav space ── */
   body { font-size: 14px; overflow-x: hidden; padding-bottom: 64px; }
-  * { max-width: 100%; overflow-wrap: break-word; word-break: break-word; }
-  img, svg, video { max-width: 100%; height: auto; }
+  p, span, div, h1, h2, h3, h4, h5, h6, a, li, td, th, label, button, input, textarea, select {
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+  img, svg, video, iframe { max-width: 100%; height: auto; }
 
   /* ── Typography: headings → 18px ── */
-  h1 { font-size: 18px !important; }
-  h2 { font-size: 18px !important; }
-  h3 { font-size: 16px !important; }
-  .hero h1 { font-size: 18px !important; line-height: 1.3; }
-  .section-header h2 { font-size: 18px !important; }
+  /* Using explicit selectors to avoid !important where possible */
+  h1, h2 { font-size: 18px; line-height: 1.3; }
+  h3 { font-size: 16px; }
+  /* Override clamp-based h1 in hero (media query at end of file wins by cascade) */
+  .hero h1 { font-size: 18px; line-height: 1.3; }
+  .section-header h2 { font-size: 18px; }
   .section-header p { font-size: 13px; }
-  .page-band h1 { font-size: 18px !important; }
+  .page-band h1 { font-size: 18px; }
   .page-band p { font-size: 13px; }
-  .cta-banner h2 { font-size: 18px !important; }
+  .cta-banner h2 { font-size: 18px; }
   .cta-banner p { font-size: 13px; }
-  .detail-title { font-size: 18px !important; }
-  .dash-section-title { font-size: 18px !important; }
+  .detail-title { font-size: 18px; }
+  .dash-section-title { font-size: 18px; }
 
   /* ── Hero: shorter on mobile ── */
   .hero { padding: 32px 16px 28px; }
@@ -838,7 +842,7 @@ input, select, textarea { font-family: inherit; }
   .steps-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
   .step-card { padding: 14px 10px; }
   .step-icon-wrap { width: 48px; height: 48px; margin-bottom: 10px; }
-  .step-card h3 { font-size: 14px !important; }
+  .step-card h3 { font-size: 14px; }
   .step-card p { font-size: 12px; }
   .step-num { font-size: 10px; }
 
@@ -867,7 +871,7 @@ input, select, textarea { font-family: inherit; }
   /* ── Auth ── */
   .auth-page { padding: 16px; }
   .auth-header { padding: 20px 16px; }
-  .auth-header h1 { font-size: 22px !important; }
+  .auth-header h1 { font-size: 22px; }
   .auth-body { padding: 16px; }
   .auth-card { border-radius: var(--radius-lg); }
 
