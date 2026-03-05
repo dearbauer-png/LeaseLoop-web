@@ -144,6 +144,7 @@ input, select, textarea { font-family: inherit; }
 }
 .brand-logo-svg { color: var(--teal-600); flex-shrink: 0; display: block; }
 .brand-text { color: var(--gray-900); }
+.navbar-logo { height: 48px; width: auto; display: block; }
 .navbar-links { display: flex; align-items: center; gap: 2px; list-style: none; }
 .navbar-links a, .navbar-links button {
   padding: 6px 14px; border-radius: var(--radius-full); font-size: 14px; font-weight: 700;
@@ -230,6 +231,7 @@ input, select, textarea { font-family: inherit; }
 .hero-logo-svg { display: block; color: rgba(255,255,255,.95); }
 .hero-logo-wordmark { font-size: 32px; font-weight: 800; letter-spacing: -0.5px; color: white; }
 .hero-logo-tagline { font-size: 12px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase; color: rgba(255,255,255,.65); margin-top: 6px; }
+.hero-logo { height: 80px; width: auto; margin-bottom: 16px; display: block; margin-left: auto; margin-right: auto; }
 
 .hero-badge { display: inline-block; background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.35); color: white; padding: 6px 18px; border-radius: var(--radius-full); font-size: 13px; font-weight: 700; margin-bottom: 20px; letter-spacing: .4px; }
 .hero h1 { font-size: clamp(26px, 5vw, 50px); font-weight: 800; line-height: 1.15; margin-bottom: 14px; }
@@ -416,7 +418,8 @@ input, select, textarea { font-family: inherit; }
 .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 32px; margin-bottom: 40px; }
 @media (max-width: 768px) { .footer-grid { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 480px) { .footer-grid { grid-template-columns: 1fr; } }
-.footer-brand { display: flex; align-items: center; gap: 8px; font-size: 18px; font-weight: 700; color: white; margin-bottom: 10px; }
+.footer-brand { display: flex; align-items: center; gap: 8px; font-size: 20px; font-weight: 800; color: white; margin-bottom: 10px; }
+.footer-brand img { height: 32px; width: auto; }
 .footer-tagline { font-size: 14px; opacity: .7; max-width: 280px; line-height: 1.6; }
 .footer-col h4 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: rgba(255,255,255,.45); margin-bottom: 14px; }
 .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
@@ -806,6 +809,9 @@ input, select, textarea { font-family: inherit; }
   .hero-logo-block { margin-bottom: 12px; }
   .hero-logo-wordmark { font-size: 22px; }
   .hero-logo-tagline { font-size: 10px; letter-spacing: 1.5px; }
+  .hero-logo { height: 60px; }
+  .navbar-logo { height: 40px; }
+  .footer-brand img { height: 28px; }
   .hero-sub { font-size: 13px; margin-bottom: 20px; }
   .hero-stats { gap: 10px; margin-top: 20px; flex-wrap: wrap; justify-content: center; }
   .hero-stat { min-width: 60px; }
